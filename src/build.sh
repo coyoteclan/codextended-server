@@ -80,7 +80,7 @@ fi
 
 params="$DEFINES -std=c99 -I. -m32 -fPIC -Wno-write-strings"
 
-mkdir -p ../bin
+mkdir -p ../build
 mkdir -p obj
 echo -e "\nCOMPILING"
 
@@ -132,15 +132,15 @@ obj="$(ls obj/*.o)"
 
 if [ $uMYSQL = true ]; then
 if [ $DEBUG = true ]; then
-$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../bin/codextended.so $obj -Os -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../build/codextended.so $obj -Os -lz -ldl -lm -Wall
 else
-$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../bin/codextended.so $obj -Os -s -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../build/codextended.so $obj -Os -s -lz -ldl -lm -Wall
 fi
 else
 if [ $DEBUG = true ]; then
-$compiler -m32 -shared -L/lib32 -L./lib -o ../bin/codextended.so $obj -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L./lib -o ../build/codextended.so $obj -lz -ldl -lm -Wall
 else
-$compiler -m32 -shared -L/lib32 -L./lib -o ../bin/codextended.so $obj -Os -s -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L./lib -o ../build/codextended.so $obj -Os -s -lz -ldl -lm -Wall
 fi
 fi
 find ./obj -name '*.o' ! -name 'duktape.o' -delete
