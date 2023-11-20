@@ -16,7 +16,6 @@
 */
 
 #include "script.h"
-#include "steamwrapper.h"
 
 /*
 	:: Scr_GetFunction/GetMethod ::
@@ -197,10 +196,6 @@ void GScr_system(int a) {
 	#endif
 }
 
-void GScr_getUnixTime() {
-	Scr_AddInt(time(NULL));
-}
-
 void Scr_GetArrayKeys(int a);
 void Scr_PassArray(int);
 
@@ -282,7 +277,6 @@ SCRIPTFUNCTION scriptFunctions[] = {
     {"getconfigstring", GScr_getconfigstring, 0},
     {"configstringindex", GScr_configstringindex, 0},
     {"system", GScr_system, 0},
-	{"getunixtime", GScr_getUnixTime, 0},
 	{NULL, NULL, 0}
 };
 
@@ -1803,16 +1797,10 @@ void _Scr_RunCurrentThreads() {
 
 #include <netinet/in.h>
 
-void scriptInitializing() {
+void scriptInitializing()
+{
 	memcpy((void*)&rct_bytes[0], (void*)GAME("Scr_RunCurrentThreads"), 5);
 	__jmp(GAME("Scr_RunCurrentThreads"), (unsigned)_Scr_RunCurrentThreads);
-	
-#ifdef STEAM_SUPPORT
-	if(CSteamServer_Init(INADDR_ANY, 8766, 28960, 25011, "1.0.0.0"))
-		printf("CSteamServer_Init worked\n");
-	else
-		printf("CSteamServer_Init failed!\n");
-#endif
 	
 //	__jmp(GAME("Scr_GetGenericField"), _Scr_GetGenericField);
 	

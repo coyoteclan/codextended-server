@@ -212,6 +212,7 @@ extern cvar_t *x_spectator_noclip;
 extern cvar_t *x_connectmessage;
 
 extern cvar_t *cl_allowDownload; //the client will locally change any cvars to match the SYSTEMINFO cvars
+extern cvar_t *x_nodownload_paks;
 
 #define MAX_MASTER_SERVERS 5
 extern cvar_t* sv_master[MAX_MASTER_SERVERS];
@@ -257,51 +258,72 @@ extern pmove_t *pm;
 
 #define iprintln(m) SV_SendServerCommand(NULL, 0, "e \"%s\"", m)
 
-typedef struct {
-	netsrc_t sock;
-	int dropped;
-	netadr_t remoteAddress;
-	int qport;
-	/* lot more bs here */
-} netchan_t;
+#define MAX_CONFIGSTRINGS 2048
+#define MAX_MSGLEN 0x4000
+typedef struct
+{
+	char command[MAX_STRING_CHARS];
+	int cmdTime;
+	int cmdType;
+} reliableCommands_t; //FROM COD2REV
+typedef struct
+{
+	netsrc_t	sock;
+	int			dropped;			// between last packet and previous
+	netadr_t	remoteAddress;
+	int			qport;				// qport value to write when transmitting
+	// sequencing variables
+	int			incomingSequence;
+	int			outgoingSequence;
+	// incoming fragment assembly buffer
+	int			fragmentSequence;
+	int			fragmentLength;	
+	byte		fragmentBuffer[MAX_MSGLEN];
+	// outgoing fragment buffer
+	// we need to space out the sending of large fragmented messages
+	qboolean	unsentFragments;
+	int			unsentFragmentStart;
+	int			unsentLength;
+	byte		unsentBuffer[MAX_MSGLEN];
+} netchan_t; //FROM ID TECH3 GITHUB SOURCE
 
-typedef struct client_s {
-  int state;
-  int unknown4;
-  int unknown8;
-  char userinfo[1024];
-  char field_40C;
-  char gap_40D[66047];
-  int reliableSequence;
-  int reliableAcknowledge;
-  char gap_10614;
-  char gap_10615[7];
-  int gamestateMessageNum;
-  int challenge;
-  usercmd_t lastUsercmd;
-  int lastClientCommand;
-  char lastClientCommandString[1024];
-  unsigned int gentity;
-  char name[32];
-  char downloadName[64];
-  int download;
-  int downloadSize;
-  int downloadCount;
-  int junk;
-  int gap_10AB4;
-  char gap_10AB8[84];
-  int lastPacketTime;
-  int lastConnectTime;
-  int nextSnapshotTime;
-  char gap_10B18[269704];
-  int ping;
-  int rate;
-  int snapshotMsec;
-  int pureAuthentic;
-  netchan_t netchan;
-  char lazy_to_figure_out_so_fill_it_up[32812];
+#define	MAX_RELIABLE_COMMANDS 64
+typedef struct client_s
+{
+	int state;
+	int unknown4;
+	int unknown8;
+	char userinfo[1024];
+	reliableCommands_t	reliableCommands[MAX_RELIABLE_COMMANDS];
+	int reliableSequence;
+	int reliableAcknowledge;
+	char gap_10614;
+	char gap_10615[7];
+	int gamestateMessageNum;
+	int challenge;
+	usercmd_t lastUsercmd;
+	int lastClientCommand;
+	char lastClientCommandString[1024];
+	unsigned int gentity;
+	char name[32];
+	char downloadName[64];
+	int download;
+	int downloadSize;
+	int downloadCount;
+	int junk;
+	int gap_10AB4;
+	char gap_10AB8[84];
+	int lastPacketTime;
+	int lastConnectTime;
+	int nextSnapshotTime;
+	char gap_10B18[269704];
+	int ping;
+	int rate;
+	int snapshotMsec;
+	int pureAuthentic;
+	netchan_t netchan;
+	char unknown_rest[16];
 } client_t;
-
 
 typedef void (*Netchan_Setup_t)( netsrc_t sock, netchan_t* chan, netadr_t adr, int qport );
 extern Netchan_Setup_t Netchan_Setup;

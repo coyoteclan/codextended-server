@@ -43,6 +43,7 @@ extern x##_t x
 #define COM_BitClear xtn_COM_BitClear
 #define SV_PacketEvent xtn_SV_PacketEvent
 #define cl_allowDownload xtn_cl_allowDownload
+#define x_nodownload_paks xtn_x_nodownload_paks
 #define colorMdGrey xtn_colorMdGrey
 #define SV_GentityNum xtn_SV_GentityNum
 #define uCoDExtended xtn_uCoDExtended
@@ -168,7 +169,6 @@ extern x##_t x
 #define GScr_getconfigstring xtn_GScr_getconfigstring
 #define GScr_configstringindex xtn_GScr_configstringindex
 #define GScr_system xtn_GScr_system
-#define GScr_getUnixTime xtn_GScr_getUnixTime
 #define SV_Trace xtn_SV_Trace
 #define sv_maxRate xtn_sv_maxRate
 #define GScr_getSite xtn_GScr_getSite
@@ -388,6 +388,8 @@ extern x##_t x
 #define getclient xtn_getclient
 #define _Q_random xtn__Q_random
 #define PM_ClipVelocity xtn_PM_ClipVelocity
+#define PM_ProjectVelocity xtn_PM_ProjectVelocity
+#define PM_Bounce xtn_PM_Bounce
 #define level xtn_level
 #define ScriptEnt_SetLight xtn_ScriptEnt_SetLight
 #define PlayerCmd_ispure xtn_PlayerCmd_ispure
@@ -407,6 +409,7 @@ extern x##_t x
 #define FS_IsExtendedFile xtn_FS_IsExtendedFile
 #define g_scr_data xtn_g_scr_data
 #define x_cl_adsair xtn_x_cl_adsair
+#define x_cl_bounce xtn_x_cl_bounce
 #define SV_Kick_f xtn_SV_Kick_f
 #define ucmd_ascii xtn_ucmd_ascii
 #define Com_Error xtn_Com_Error

@@ -1,22 +1,25 @@
-# Call of Duty Extended [Server]
+##### If you represent Activision and want this fork to be deleted, please contact me first.
+___
+# Server extension for Call of Duty ([CoD1](https://en.wikipedia.org/wiki/Call_of_Duty_(video_game)))
+It works for the multiplayer patch 1.1  
+You can get info for this game at [cod.pm](https://cod.pm/)
+___
+### This adds improvements, such as:
 
-Call of Duty Extended Server is a modification of the Call of Duty 1 Linux server. It supports patch 1.1 (with outdated 1.5 support).
+- Security features to protect from players
+- Bug fixes
+- Custom GSC functions
+___
+### Installation instructions
 
-## Features
+You can build this project for free using Linux.
 
-- cracked server with unpure fixes (everyone can join)
-- Q3 exploit fixes (msgboom, dirtrav)
-- ratelimiting
-- a lot of new GSC commands + MySQL support
+1. From the *src* folder, enter `sudo bash build.sh -d` in a terminal.
+2. Put the compiled *codextended.so* file from the *bin* folder to your CoD server directory.
+3. Inject *codextended.so* into *cod_lnxded* like in the [step 5](https://cod.pm/guide/a7a40b/call-of-duty-1-server-on-linux-installing-and-configuring) of the cod.pm guide.
 
-## Setup & more info
+The server will now be hooked with the extension.
+___
+#### Notes
 
-Check the [Wiki](https://github.com/riicchhaarrd/codextended/wiki)!
-
-Forum: http://xtnded.org
-
-## License
-
-CoDExtended is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-Thanks to [kungfooman](http://killtube.org) and his [libcod](https://github.com/kungfooman/libcod) project (CoD 2 memory modification).
+- 11/20/2023: Fork creation, more is planned

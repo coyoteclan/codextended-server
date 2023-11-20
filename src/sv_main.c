@@ -16,7 +16,6 @@
 */
 
 #include "server.h"
-#include "steamwrapper.h"
 
 #define MAX_MSGLEN 32000
 
@@ -74,6 +73,7 @@ cvar_t *x_deadchat;
 cvar_t *x_connectmessage;
 
 cvar_t *cl_allowDownload;
+cvar_t *x_nodownload_paks;
 
 netadr_t x_master;
 char x_mastername[14];
@@ -146,12 +146,12 @@ void SV_NocPacket(netadr_t from, msg_t *msg) { //Not connected packet (Server is
 	char* s;
 	char* c;
 	if(msg->cursize >= 4) {
-		if(*(int*)msg->data == -1) {
-			#ifdef STEAM_SUPPORT
-			int CSteamServer_HandleIncomingPacket(const void* pData, int cbData, unsigned int srcIP, unsigned short srcPort);
-			if(!CSteamServer_HandleIncomingPacket((const void*)msg->data, msg->cursize, from._ip, from.port));
-			#endif
-		} else if(*(int*)msg->data == -2) {	
+		if(*(int*)msg->data == -1)
+		{
+			
+		}
+		else if(*(int*)msg->data == -2)
+		{	
 			MSG_BeginReading(msg);
 			MSG_ReadLong(msg);
 			
@@ -173,22 +173,96 @@ void SV_NocPacket(netadr_t from, msg_t *msg) { //Not connected packet (Server is
 	}
 }
 
-void SV_PacketEvent( netadr_t from, msg_t *msg ) {
-	#if 0
-	if(msg->cursize >= 4) {
-		Com_Printf("got msg! %d\n", *(int*)msg->data);
-		if(*(int*)msg->data == 1337) {
-			Com_Printf("Got message -2 ~!!!!\n");
-			return;
-		}
-	
+void SV_PacketEvent(netadr_t from, msg_t *msg)
+{
+	//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### Sys_GetPacket \n");
+
+	int (*MSG_ReadShort)(msg_t*) = (int(*)(msg_t*))0x807f2c0;
+	qboolean (*Netchan_Process)(netchan_t*, msg_t*) = (qboolean(*)(netchan_t*, msg_t*))0x80804f0;
+	int (*MSG_ReadByte)(msg_t*) = (int(*)(msg_t*))0x807F294;
+	void (*SV_Netchan_Decode)(client_t*, byte*, int) = (void(*)(client_t*, byte*, int))0x808de60;
+
+	int i;
+	client_t *cl;
+	int qport;
+
+	// check for connectionless packet (0xffffffff) first
+	if ( msg->cursize >= 4 && *(int*)msg->data == -1 )
+	{
+		SV_ConnectionlessPacket( from, msg );
+		return;
 	}
-	#endif
-	
-	void (*o)(netadr_t,msg_t*);
-	*(int*)&o = 0x808C870;
-	
-	o(from,msg);
+
+	// read the qport out of the message so we can fix up
+	// stupid address translating routers
+	MSG_BeginReading( msg );
+	MSG_ReadLong( msg ); // sequence number
+	qport = (unsigned short)MSG_ReadShort(msg);
+
+	// find which client the message is from
+	for ( i = 0, cl = *clients ; i < sv_maxclients->integer ; i++,cl++ )
+	{
+		if ( cl->state == CS_FREE )
+		{
+			continue;
+		}
+		if ( !NET_CompareBaseAdr( from, cl->netchan.remoteAddress ) )
+		{
+			continue;
+		}
+		
+		// it is possible to have multiple clients from a single IP
+		// address, so they are differentiated by the qport variable
+		if ( cl->netchan.qport != qport )
+		{
+			continue;
+		}
+		
+		// the IP port can't be used to differentiate them, because
+		// some address translating routers periodically change UDP
+		// port assignments
+		if ( cl->netchan.remoteAddress.port != from.port )
+		{
+			Com_Printf( "SV_PacketEvent: fixing up a translated port\n" );
+			cl->netchan.remoteAddress.port = from.port;
+		}
+		
+		// make sure it is a valid, in sequence packet
+		if ( Netchan_Process(&cl->netchan, msg) )
+		{
+			int* cl_serverId = (int*)((int)cl + 370936);
+			int* cl_messageAcknowledge = (int*)((int)cl + 67096);
+
+			*cl_serverId = MSG_ReadByte(msg);
+			*cl_messageAcknowledge = MSG_ReadLong(msg);
+
+			if ( *cl_messageAcknowledge < 0 )
+			{
+				Com_Printf("Invalid reliableAcknowledge message from %s - reliableAcknowledge is %i\n", cl->name, cl->reliableAcknowledge);
+				return;
+			}
+
+			cl->reliableAcknowledge = MSG_ReadLong(msg);
+
+			//TODO: check exploit https://github.com/voron00/CoD2rev_Server/blob/f11de5cbb13f1eebb7e658a0f6782df4b3aa9e60/src/server/sv_main_mp.cpp#L1285C1-L1285C114
+
+			SV_Netchan_Decode(cl, &msg->data[msg->readcount], msg->cursize - msg->readcount);
+
+			// zombie clients still need to do the Netchan_Process
+			// to make sure they don't need to retransmit the final
+			// reliable message, but they don't do any other processing
+			if ( cl->state != CS_ZOMBIE )
+			{
+				cl->lastPacketTime = svs_time;
+				custom_SV_ExecuteClientMessage(cl, msg);
+			}
+		}
+		return;
+
+		// if we received a sequenced packet from an address we don't recognize,
+		// send an out of band disconnect packet to it
+		NET_OutOfBandPrint( NS_SERVER, from, "disconnect" );
+	}
 }
 
 void SVC_Info( netadr_t* from ) {
@@ -236,7 +310,7 @@ void SVC_Info( netadr_t* from ) {
 	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ) );
 	Info_SetValueForKey( infostring, "gametype", g_gametype->string );
 	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ) );
-	Info_SetValueForKey(infostring, "codextended", va("v%d", CURRENTBUILD));
+	Info_SetValueForKey(infostring, "codextended", va("%s", CODEXTENDED_VERSION));
 	
 	if ( sv_minPing->integer ) {
 		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ) );
@@ -396,7 +470,7 @@ void SV_MasterHeartBeat(const char* hbname) {
 	
 	if (NET_StringToAdr( where, &adr[MAX_MASTER_SERVERS] ) ) {
 		adr[MAX_MASTER_SERVERS].port = BigShort( 20510 );
-		NET_OutOfBandPrint( NS_SERVER, adr[MAX_MASTER_SERVERS], "heartbeat %s %d\n", hbname, CURRENTBUILD);
+		NET_OutOfBandPrint( NS_SERVER, adr[MAX_MASTER_SERVERS], "heartbeat %s %s\n", hbname, CODEXTENDED_VERSION);
 	}
 	//#endif
 }
@@ -411,6 +485,7 @@ void SVC_Chandelier(netadr_t *from) {
 	char* txt = Cmd_Argv( 2 );
 	clientversion = atoi(Cmd_Argv( 3 ));
 
+	#if 0
 	if(newestbuild != CURRENTBUILD) {
 	
 		char msg[31];
@@ -449,6 +524,7 @@ void SVC_Chandelier(netadr_t *from) {
 		
 		Com_Printf(msg);
 	}
+	#endif
 
 	//#ifdef xPOWERED
 	if(txt[0] != '\0') {
@@ -582,14 +658,10 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	call(from, msg);*/
 }
 
-void SV_Frame(int msec) {
+void SV_Frame(int msec)
+{
 	void (*o)(int) = (void(*)(int))0x808CDF8;
-
 	o(msec);
-
-#ifdef STEAM_SUPPORT
-	CSteamServer_RunFrame();
-#endif	
 }
 
 // RATELIMITER (experimental)

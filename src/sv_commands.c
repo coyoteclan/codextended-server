@@ -22,12 +22,13 @@
 SV_Version	
 ==================
 */
+
 void SV_Version() {
 	//printf(VERSION_STRING, EXTENDEDVERSION);
 	#ifdef xDEBUG
-	printf("Call of Duty Extended Developer v%d by riicchhaarrd\nA lot of thanks to kungfooman and libcod\n", CURRENTBUILD);
+	printf("Call of Duty Extended Developer v%s by riicchhaarrd\nA lot of thanks to kungfooman and libcod\n", CODEXTENDED_VERSION);
 	#else
-	printf("Call of Duty Extended v%d by riicchhaarrd\nA lot of thanks to kungfooman and libcod\n", CURRENTBUILD);
+	printf("Call of Duty Extended v%s by riicchhaarrd\nA lot of thanks to kungfooman and libcod\n", CODEXTENDED_VERSION);
 	#endif
 }
 

@@ -148,36 +148,37 @@ void SV_Init( void ) {
 	x_spectator_noclip = Cvar_Get("x_spectator_noclip", "0", CVAR_ARCHIVE);
 	x_connectmessage = Cvar_Get("x_connectmessage", "", CVAR_ARCHIVE);
 	cl_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_SYSTEMINFO);
+	x_nodownload_paks = Cvar_Get("x_nodownload_paks", "", 0);
 	
 	Cvar_Get("rate", "25000", CVAR_SYSTEMINFO);
 	Cvar_Get("snaps", "40", CVAR_SYSTEMINFO);
 	
 	extern cvar_t *x_cl_adsair;
-	x_cl_adsair = Cvar_Get("x_cl_adsair", "1", 0);
+	x_cl_adsair = Cvar_Get("x_cl_adsair", "0", 0);
+
+	extern cvar_t *x_cl_bounce;
+	x_cl_bounce = Cvar_Get("x_cl_bounce", "0", CVAR_SYSTEMINFO | 1);
 	
 	cvar_t *x_nopbots = Cvar_Get("x_nopbots", "0", 0);
 	/*
 		NOP SV_BotUsermove calls
 	*/
-	
-	if(x_nopbots->integer) {
+	//Would never be true because Cvar_Get w/ default="0": remains 0 in SV_Init even if is 1 in .cfg.
+	/*if(x_nopbots->integer) { 
 		__nop(0x808D152, 5);
 		__nop(0x808D492, 5);
-	}
+	}*/
 	
 	#if CODPATCH == 5
 	sv_disableClientConsole = Cvar_Get("sv_disableClientConsole", "0", 8);
 	#endif
 	
 	x_authorize = Cvar_Get("x_authorize", "0", 0);
-	/*Both needed for deathrun server to prevent players from blocking each other*/
+	/*was needed for deathrun server to prevent players from blocking each other*/
 	x_contents = Cvar_Get("x_contents", "-1", 0);
 	x_stuck = Cvar_Get("x_stuck", "0", 0); 
 	
-	Cvar_Get("codextended", va("CoDExtended v%d", CURRENTBUILD), CVAR_SERVERINFO | CVAR_ROM | CVAR_NORESTART);
-	//Cvar_Get("codextended", "This server is powered by CoDExtended.", CVAR_SERVERINFO | CVAR_ROM | CVAR_NORESTART);
-	
-	x_bannedmessage = Cvar_Get("x_bannedmsg", "You have been banned from this server.", 0);
+	Cvar_Get("codextended", va("CoDExtended %s", CODEXTENDED_VERSION), CVAR_SERVERINFO | CVAR_ROM | CVAR_NORESTART);
 	
 	sv_master[0] = Cvar_Get("sv_master1", "codmaster.activision.com", 0);
 	sv_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);

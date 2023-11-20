@@ -21,7 +21,7 @@ void CoDExtended();
 
 int __attribute__((visibility ("default"))) codextended_module_load() {
 	CoDExtended();
-	return BUILDNUMBER;
+	return CODEXTENDED_VERSION;
 }
 
 void __attribute__ ((constructor)) __attribute__((visibility ("default"))) codextended_load(void) {

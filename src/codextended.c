@@ -34,7 +34,6 @@
 #include <execinfo.h>
 #include "server.h"
 #include "surfaceflags.h"
-#include "steamwrapper.h"
 
 #ifdef uMYSQL
 MYSQL *db = NULL;
@@ -52,23 +51,16 @@ void Log(const char *s) {
 	fprintf(logfile, "%s", s);
 }
 
-void uCoDExtended() {
-
+void uCoDExtended()
+{
 	static int freed = 0;
 	if(freed)
 		return;
 	freed = 1;
 
-
 	void WebServer_Stop();
 	WebServer_Stop();
 
-	#ifdef STEAM_SUPPORT
-	CSteamServer_Shutdown();
-	CSteamClient_Shutdown();
-	#endif
-
-	
 	if(logfile != NULL)
 		fclose(logfile);
 	
@@ -224,16 +216,6 @@ void CoDExtended() {
 	srand (time(NULL));
 	//mtrace();
 
-	#ifdef STEAM_SUPPORT
-	
-	#define STEAM_APPID "203300"
-	//#define STEAM_APPID "42750"
-	
-	putenv("SteamGameId=" STEAM_APPID);
-	putenv("SteamAppId=" STEAM_APPID);
-	
-	#endif
-
 	x_mastername[0] = 'c';
 	x_mastername[1] = 'o';
 	x_mastername[2] = 'd';
@@ -341,12 +323,10 @@ void CoDExtended() {
 	__call(0x8083DA4, (unsigned)SV_SpawnServer);
 	__call(0x8083EA4, (unsigned)SV_SpawnServer);
 	
-	/*
 	void SV_PacketEvent(netadr_t,msg_t*);
 	__call(0x806BFEC, (int)SV_PacketEvent);
 	__call(0x806C1B8, (int)SV_PacketEvent);
 	__call(0x806E15C, (int)SV_PacketEvent);
-	*/
 	
 	qboolean    Sys_GetPacket( netadr_t *net_from, msg_t *net_message );
 	__jmp(0x80C71F0, (int)Sys_GetPacket);
@@ -374,19 +354,24 @@ void CoDExtended() {
 	void SV_Frame(int);
 	__call(0x806D0E4, (int)SV_Frame);
 
+	//FROM PROPOSER COMPONENT
 	void (*SV_SendClientGameState)(client_t*);
-	//__call(0x8087A1E, (int)SV_SendClientGameState);
-	//__call(0x80876B1, (int)SV_SendClientGameState);
-	//__call(0x8087447, (int)SV_SendClientGameState);
-	//crashes
+	void custom_SV_SendClientGameState(client_t* cl);  // Forward declaration
+	SV_SendClientGameState = custom_SV_SendClientGameState;
+	__jmp(0x8085EEC, (int)SV_SendClientGameState);
+	//FROM PROPOSER COMPONENT END
+
+	//DOWNLOAD STUCK ISSUE FIX
+	void (*SV_ExecuteClientMessage)(client_t*, msg_t*);
+	void custom_SV_ExecuteClientMessage(client_t* cl, msg_t* msg);  // Forward declaration
+	SV_ExecuteClientMessage = custom_SV_ExecuteClientMessage;
+	__jmp(0x80872EC, (int)SV_ExecuteClientMessage);
+	//DOWNLOAD STUCK ISSUE FIX END
 
 	const char *__cdecl FS_ReferencedPakChecksums();
 	const char *__cdecl FS_ReferencedPakNames();
-
-	#ifdef uFEATUREUNSAFE
 	__jmp(0x80717A4, (int)FS_ReferencedPakChecksums);
 	__jmp(0x80716CC, (int)FS_ReferencedPakNames);
-	#endif
 
 	/* sv_snapshot.asm */
 	unsigned TestGetAddr();
@@ -404,8 +389,8 @@ void CoDExtended() {
 	*(int*)0x0806CB0D = (int)COD_Destructor;
 	
 	//patch unpure crap
-	*(byte*)0x80874A6 = 0xeb;
-	*(byte*)0x80871FD = 0xeb;
+	//*(byte*)0x80874A6 = 0xeb;
+	//*(byte*)0x80871FD = 0xeb;
 	
 	#else
 	

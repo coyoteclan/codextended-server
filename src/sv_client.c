@@ -354,8 +354,6 @@ void SV_SendDownloadDone(client_t *cl) { //let's fake that the downloads are don
 	SV_SendMessageToClient(&msg, cl);
 }
 
-#define _SV_SendClientGameState(cl) ((void(*)(client_t*))0x8085EEC)(cl);
-	
 
 client_t *last_cl = NULL;
 
@@ -449,25 +447,146 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	strcat( s, newi );
 }
 
-void SV_SendClientGameState(client_t *cl) {
-	last_cl = cl;
-	
-	((void(*)(client_t*))0x8085EEC)(cl);
-}
+//FROM PROPOSER COMPONENT
+void custom_SV_SendClientGameState(client_t *client)
+{
+	cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### custom_SV_SendClientGameState \n");
+	last_cl = client;
 
-void SV_ExecuteClientMessage(client_t *cl, msg_t *msg) {
+	int start;
+	entityState_t nullstate;
+	msg_t msg;
+	byte msgBuffer[MAX_MSGLEN];
+	while (client->state && client->netchan.unsentFragments)
+	{
+		cprintf(PRINT_UNDERLINE | PRINT_WARN, "SV_Netchan_TransmitNextFragment \n");
+		((void(*)(netchan_t*))0x808dcf8)(&client->netchan); //SV_Netchan_TransmitNextFragment
+	}
+	Com_DPrintf("SV_SendClientGameState() for %s\n", client->name);
+	Com_DPrintf("Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name);
+	client->state = CS_PRIMED;
+	client->pureAuthentic = 0;
+	client->gamestateMessageNum = client->netchan.outgoingSequence;
+	MSG_Init(&msg, msgBuffer, sizeof(msgBuffer));
+	// let the client know which reliable clientCommands we have received
+	MSG_WriteLong(&msg, client->lastClientCommand);
+	// send any server commands waiting to be sent first.
+	((void(*)(client_t*, msg_t*))0x80906d0)(client, &msg); //SV_UpdateServerCommandsToClient
+	MSG_WriteByte(&msg, svc_gamestate);
+	MSG_WriteLong(&msg, client->reliableSequence);
+	// write the configstrings
+	for (start = 0 ; start < MAX_CONFIGSTRINGS ; start++)
+	{
+		if (configstrings[start][0])
+		{
+			//cprintf(PRINT_UNDERLINE | PRINT_WARN, "configstrings[%d] = %s \n", start, configstrings[start]);
+			MSG_WriteByte(&msg, svc_configstring);
+			MSG_WriteShort(&msg, start);
+			MSG_WriteBigString(&msg, configstrings[start]);
+		}
+	}
+	
+	// write the baselines
+	memset(&nullstate, 0, sizeof(nullstate));
+	int *base = (int*)(0x08357680);
+	for (start = 0; start < MAX_GENTITIES; start++)
+	{
+		base += 0x5f;
+		if (!*base)
+		{
+			continue;
+		}
+		MSG_WriteByte(&msg, svc_baseline);
+		((void(*)(
+			msg_t*,
+			struct entityState_s*,
+			struct entityState_s*,
+			qboolean))0x807f698)(&msg, &nullstate, base, qtrue); //MSG_WriteDeltaEntity
+	}
+	MSG_WriteByte(&msg, svc_EOF);
+	MSG_WriteLong(&msg, get_client_number(client));
+	int* sv_checksumFeed = (int*)0x835526c;
+	MSG_WriteLong(&msg, *sv_checksumFeed);
+	MSG_WriteByte(&msg, svc_EOF);
+	Com_DPrintf("Sending %i bytes in gamestate to client: %i\n", msg.cursize, get_client_number(client));
+	SV_SendMessageToClient(&msg, client);
+}
+//FROM PROPOSER COMPONENT END
+
+void custom_SV_ExecuteClientMessage(client_t *cl, msg_t *msg)
+{
+	//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### custom_SV_ExecuteClientMessage \n");
 	last_cl = cl;
-	#if 0
-	byte msg_buf[16384];
-	//msg_t msg;
-	
-	MSG_Init( &msg, msg_buf, sizeof( msg_buf ) );
-	void (*MSG_ReadBitsCompress)(byte*, msg_t*, int) = (void (*)(byte*,msg_t*, int))0x807F23C;
-	
-	MSG_ReadBitsCompress(msg->data + msg->readcount, msg, msg->cursize - msg->readcount);
-	#endif
-	
-	((void(*)(client_t*,msg_t*))0x80872EC)(cl, msg);
+
+	int* cl_serverId = (int*)((int)cl + 370936);
+	int* sv_serverId = (int*)0x80e30c0;
+	int* cl_messageAcknowledge = (int*)((int)cl + 67096);
+
+	int (*MSG_ReadBitsCompress)(msg_t*, byte*, int) = (int(*)(msg_t*, byte*, int))0x807F23C;
+	int (*MSG_ReadBits)(msg_t*, int) = (int(*)(msg_t*, int))0x807F18C;
+	//void (*SV_SendClientGameState)(client_t*) = (void(*)(client_t*))0x8085EEC;
+	void (*SV_UserMove)(client_t*, msg_t*, qboolean) = (void(*)(client_t*, msg_t*, qboolean))0x8086fa4;
+
+	byte msgBuf[16384];
+	msg_t decompressMsg;
+	int c;
+
+	MSG_Init(&decompressMsg, msgBuf, sizeof(msgBuf));
+	decompressMsg.cursize = MSG_ReadBitsCompress(&msg->data[msg->readcount], msgBuf, msg->cursize - msg->readcount);
+
+	if (*cl_serverId == *sv_serverId || cl->downloadName[0])
+	{
+		while (1)
+		{
+			c = MSG_ReadBits(&decompressMsg, 2);
+			if (c != 2)
+			{
+				break;
+			}
+			if (!SV_ClientCommand(cl, &decompressMsg) || cl->state == CS_ZOMBIE)
+			{
+				return;
+			}
+		}
+		
+		if (sv_pure->integer && cl->pureAuthentic == 2)
+		{
+			cl->nextSnapshotTime = -1;
+			SV_DropClient(cl, "EXE_UNPURECLIENTDETECTED");
+			cl->state = CS_ACTIVE;
+			SV_SendClientSnapshot(cl);
+			cl->state = CS_ZOMBIE;
+		}
+		
+		if (c)
+		{
+			if (c == 1)
+			{
+				SV_UserMove(cl, &decompressMsg, 0);
+			}
+			else if (c != 3)
+			{
+				Com_DPrintf("WARNING: bad command byte %i for client %i\n", c, get_client_number(cl));
+			}
+		}
+		else
+		{
+			SV_UserMove(cl, &decompressMsg, 1);
+		}
+	}
+	else if ((*cl_serverId & 0xF0) == (*sv_serverId & 0xF0))
+	{
+		if ((*cl_messageAcknowledge > cl->gamestateMessageNum) && cl->state == CS_PRIMED)
+		{
+			cprintf(PRINT_UNDERLINE | PRINT_WARN, "##### DL STUCK ISSUE OCCURRED, UNSTUCK \n");
+			custom_SV_SendClientGameState(cl);
+		}
+	}
+	else if (*cl_messageAcknowledge > cl->gamestateMessageNum)
+	{
+		Com_DPrintf("%s : dropped gamestate, resending\n", cl->name);
+		custom_SV_SendClientGameState(cl);
+	}
 }
 
 void Com_DPrintf_2(const char* fmt, ...) {
@@ -1096,24 +1215,6 @@ void SV_CoDExtended_f( client_t *cl ) {
 	SV_SendServerCommand(cl, 0, "e \"This server is powered by CoDExtended.\n^2Thanks for playing %s\"", cl->name);
 }
 
-
-int FS_IsPakFile(char *name) {
-	if(strstr(name, "pak") != NULL)
-		return 1;
-	if(strstr(name, "localized") != NULL)
-		return 1;
-	return 0;
-}
-
-bool FS_IsServerFile(char* basename) {
-	if(strstr(basename, "srv") != NULL)
-		return 1;
-	if(strstr(basename, "svr") != NULL)
-		return 1;
-	if(strstr(basename, "server") != NULL)
-		return 1;
-	return 0;
-}
 
 void SV_BeginDownload(client_t* cl) {
     int argc = Cmd_Argc();
