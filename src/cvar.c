@@ -27,12 +27,8 @@ Cvar_Set_t Cvar_Set = (Cvar_Set_t)0x8073100;
 Cvar_Get_t Cvar_Get = (Cvar_Get_t)0x8072A7C;
 #endif
 
-/*
-============
-Cvar_VariableValue
-============
-*/
-float Cvar_VariableValue( const char *var_name ) {
+float Cvar_VariableValue( const char *var_name )
+{
 	cvar_t  *var;
 
 	var = Cvar_FindVar( var_name );
@@ -41,14 +37,8 @@ float Cvar_VariableValue( const char *var_name ) {
 	}
 	return var->value;
 }
-
-
-/*
-============
-Cvar_VariableIntegerValue
-============
-*/
-int Cvar_VariableIntegerValue( const char *var_name ) {
+int Cvar_VariableIntegerValue( const char *var_name )
+{
 	cvar_t  *var;
 
 	var = Cvar_FindVar( var_name );
@@ -57,14 +47,8 @@ int Cvar_VariableIntegerValue( const char *var_name ) {
 	}
 	return var->integer;
 }
-
-
-/*
-============
-Cvar_VariableString
-============
-*/
-char *Cvar_VariableString( const char *var_name ) {
+char *Cvar_VariableString( const char *var_name )
+{
 	cvar_t *var;
 
 	var = Cvar_FindVar( var_name );
@@ -73,14 +57,8 @@ char *Cvar_VariableString( const char *var_name ) {
 	}
 	return var->string;
 }
-
-
-/*
-============
-Cvar_VariableStringBuffer
-============
-*/
-void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize ) {
+void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize )
+{
 	cvar_t *var;
 
 	var = Cvar_FindVar( var_name );
@@ -90,13 +68,8 @@ void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize 
 		Q_strncpyz( buffer, var->string, bufsize );
 	}
 }
-
-/*
-============
-Cvar_VariableStringBuffer
-============
-*/
-void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize ) {
+void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize )
+{
 	cvar_t *var;
 
 	var = Cvar_FindVar( var_name );
@@ -111,49 +84,9 @@ void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int b
 	}
 }
 
-qboolean is_in_set(char c) {
-	const char annoy[] = {
-	'.', ',', '_', '-', ' '
-	};
-	
-	int i ;
-	
-	for(i = 0; i < sizeof(annoy); i++)
-		if(c==annoy[i])
-			return qtrue;
-	return qfalse;
-}
-
-cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
+cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force )
+{
 	cvar_t * (*ret)(const char*,const char*,int);
 	*(int*)&ret = 0x806ECD4;
-	/*
-	// for hostname clean on propose of rafi but it's useless if it's opensource..
-	char tmp [ MAX_STRING_TOKENS ] = {0};
-	
-	int i, j;
-	
-	j = 0;
-	
-	int lastchar = 0;
-	
-	qboolean n_ws = 0;
-	
-	for(i = 0; i < strlen(value); i++) {
-		if(i >= (MAX_STRING_TOKENS - 1) )
-			break;
-		if(value[i] < 32 || value[i] > 126)
-			continue;
-		
-		if(is_in_set(lastchar) && is_in_set(value[i]) && !n_ws)
-			continue;
-		
-		if(!is_in_set(value[i]))
-			n_ws = 1;
-		
-		lastchar = value[i];
-		tmp[j++] = value[i];
-	}
-	*/
 	return ret(var_name, value, force);
 }

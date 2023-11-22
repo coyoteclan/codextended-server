@@ -18,8 +18,6 @@
 #ifndef SHARED_H
 #define SHARED_H
 
-//#pragma extern_prefix "xtn_"
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -64,9 +62,6 @@ typedef unsigned char boolean;
 #define _PROT
 #endif
 
-//static int ( QDECL * syscall )( int arg, ... ) = ( int ( QDECL * )( int, ... ) )0x8087DCC;
-
-#define NOP 0x90
 #define VERSION_STRING "Call of Duty Extended %.1f\n"
 #define EXTENDEDVERSION 1f
 
@@ -352,11 +347,6 @@ typedef struct {
 #pragma pack(push, 1)
 
 extern short   BigShort( short l );
-extern short   LittleShort( short l );
-extern int     BigLong( int l );
-extern int     LittleLong( int l );
-extern float   BigFloat( float l );
-extern float   LittleFloat( float l );
 
 typedef void (*MSG_BeginReading_t)( msg_t *msg );
 typedef int     (*MSG_ReadLong_t)( msg_t *sb );
@@ -737,9 +727,10 @@ typedef enum {
 
 #define MAX_PERKS 16
 
-typedef struct gitem_s {
-	char        *classname;
-	//rest idc
+typedef struct gitem_s
+{
+	char *classname;
+	//some remaining
 } gitem_t;
 
 struct gentity_s {
@@ -868,12 +859,6 @@ static inline void ENT_GET(gentity_t *e, int off, void *dest, size_t size) {
 	memcpy(dest, (void*)(((int)e) + off), size);
 }
 
-typedef struct {
-	bool sprinting;
-} xentity_t;
-
-extern xentity_t xentities[1024];
-
 extern char* modNames[];
 
 typedef struct {
@@ -882,8 +867,9 @@ typedef struct {
 	
 } weaponInfo;
 
-typedef enum {
-    TRAP_PRINT,
+typedef enum
+{
+  TRAP_PRINT,
     TRAP_ERROR,
     TRAP_ERROR_LOCALIZED,
     TRAP_MILLISECONDS,
@@ -920,7 +906,7 @@ typedef enum {
     TRAP_SET_USERINFO,
     TRAP_GET_SERVERINFO,
     TRAP_SET_BRUSHMODEL,
-    COD_TRAP_TRACE, //g++ conflicts ok lol
+    COD_TRAP_TRACE, //g++ conflicts
     TRAP_TRACE_CAPSULE,
     TRAP_SIGHT_TRACE,
     TRAP_SIGHT_TRACE_CAPSULE,
@@ -1163,12 +1149,10 @@ extern FS_FileIsInPAK_t FS_FileIsInPAK;
 #define MAX_STACK   256
 #define STACK_MASK  ( MAX_STACK - 1 )
 
-typedef void vm_t;
-
 typedef int (QDECL *VM_Call_t)( int, int callnum, ... );
 extern VM_Call_t VM_Call;
 
-extern vm_t *gvm;
+extern int* gvm;
 
 /*
 ================

@@ -18,18 +18,19 @@
 #include "shared.h"
 
 void CoDExtended();
-
-int __attribute__((visibility ("default"))) codextended_module_load() {
+int __attribute__((visibility ("default"))) codextended_module_load()
+{
 	CoDExtended();
 	return CODEXTENDED_VERSION;
 }
-
-void __attribute__ ((constructor)) __attribute__((visibility ("default"))) codextended_load(void) {
+void __attribute__ ((constructor)) __attribute__((visibility ("default"))) codextended_load(void)
+{
 	CoDExtended();
 }
-// Odd, isn't it? 1.5 destructor works (apparently it should work but the stdout is closed or something... cba to rewrite for now)
+// 1.5 destructor works (apparently it should work but the stdout is closed or something)
 #if CODPATCH == 5
-void __attribute__ ((destructor)) __attribute__((visibility ("default"))) codextended_unload( void ) {
+void __attribute__ ((destructor)) __attribute__((visibility ("default"))) codextended_unload( void )
+{
 	COD_Destructor();
 }
 #endif

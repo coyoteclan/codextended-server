@@ -19,21 +19,11 @@
 #include "server.h"
 #include "bg_public.h"
 
-G_FreeEntity_t G_FreeEntity;
-G_Spawn_t G_Spawn;
 G_SetAngle_t G_SetAngle;
 G_SetOrigin_t G_SetOrigin;
 
-void G_InitGentity(gentity_t *e) {
-	e->inuse = qtrue;
-	e->classname = scr_const->noclass;
-	e->s.number = ((int)e - (int)g_entities / GENTITY_SIZE);
-	e->ownerNum = ENTITYNUM_NONE;
-	e->eventTime = 0;
-	e->freeAfterEvent = qfalse;
-}
-
-void _Scr_FreeEntity(gentity_t *ent) {
+void _Scr_FreeEntity(gentity_t *ent)
+{
 	scr_entityfield_t *fields = (scr_entityfield_t*)( GAME("vmMain") + 0x28094 );
 	for(int i = 0; fields[i].name; i++) {
 		if(fields[i].type == 3)
@@ -48,26 +38,4 @@ void _Scr_FreeEntity(gentity_t *ent) {
 	
 	void (*FreeEntityNum)(int, int) = (void(*)(int,int isHudElem))GAME("Scr_FreeEntityNum");
 	FreeEntityNum(ent->s.number, 0);
-}
-
-gentity_t *G_TempEntity(vec3_t origin, int event) {
-	gentity_t       *e;
-	vec3_t snapped;
-
-	e = G_Spawn();
-	e->s.eType = ET_EVENTS + event;
-
-	e->classname = scr_const->tempEntity;
-	
-	e->eventTime = LEVELTIME;
-	e->r_eventTime = LEVELTIME;
-	e->freeAfterEvent = qtrue;
-
-	VectorCopy( origin, snapped );
-	SnapVector( snapped );      // save network bandwidth
-	G_SetOrigin( e, snapped );
-
-	T_LinkEntity( e );
-
-	return e;
 }

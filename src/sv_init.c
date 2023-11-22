@@ -24,65 +24,12 @@ SV_GetConfigstring_t SV_GetConfigstring = (SV_GetConfigstring_t)0x808B05C;
 netadr_t authorizeAddress;
 netadr_t masterAddress;
 
-LinkedList banlist = NULL;
-
-void X_ReadBannedList(bool print_t) {
-	FILE *f;
-	netadr_t adr;
-	banInfo_t *ban;
-	char buf[256];
-	char* bufp = NULL;
-	
-	list_clear(&banlist);
-	
-	f = fopen("ipbans.txt", "r");
-	if(f) {
-		while(fgets(buf, sizeof(buf), f)) {
-			char *reason = strchr(buf, ':');
-			if(reason != NULL)
-				*reason++ = '\0';
-			bufp = utrim(buf);
-			if(!strlen(bufp))
-				continue;
-			NET_StringToAdr(bufp, &adr);
-			ban = (banInfo_t*)xalloc(sizeof(banInfo_t));
-			*ban->reason = 0;
-			ban->type = IPBAN;
-			ban->adr = adr;
-			if(reason != NULL)
-				strncpy(ban->reason, reason, sizeof(ban->reason));
-			_list_add(&banlist, ban);
-			if(print_t)
-				printf("Added IP '%s' to the list.\n", NET_BaseAdrToString(adr));
-		}
-		fclose(f);
-	}
-	
-	f = fopen("muidbans.txt", "r");
-	
-	if(f) {
-		while(fgets(buf, sizeof(buf), f)) {
-			bufp = utrim(buf);
-			if(!strlen(bufp))
-				continue;
-			if(atoi(bufp) == 0)
-				continue;
-			ban = (banInfo_t*)xalloc(sizeof(banInfo_t));
-			*ban->reason = 0;
-			ban->type = MUIDBAN;
-			Q_strncpyz(ban->mUID, bufp, sizeof(ban->mUID));
-			_list_add(&banlist, ban);
-			if(print_t)
-				cprintf(PRINT_INFO, "Added mUID '%s' to the list.\n", bufp);
-		}
-		fclose(f);
-	}
-}
-
 cvar_t *developer;
 
-void SV_Init( void ) {
+void SV_Init( void )
+{
 	void (*init)( void );
+
 	#if CODPATCH == 1
 	*(int*)&init = 0x808A94C;
 	#else if CODPATCH == 5
@@ -91,18 +38,14 @@ void SV_Init( void ) {
 	
 	init();
 	
-	if(clientsize != sizeof(client_t)) {
-		
-		cprintf(PRINT_UNDERLINE | PRINT_ERR, "ERROR: client_t size doesn't fit clientsize!!! %i != %i\n", sizeof(client_t), clientsize);
-	} else {
-		
+	if (clientsize != sizeof(client_t))
+	{
+		cprintf(PRINT_UNDERLINE | PRINT_ERR, "ERROR: client_t size doesn't fit clientsize: %i != %i\n", sizeof(client_t), clientsize);
+	}
+	else
+	{
 		//cprintf(PRINT_UNDERLINE | PRINT_GOOD, "GOOD: SIZE IS SAME OF CLIENT\n");
 	}
-	
-	if ( NET_StringToAdr( x_mastername, &x_master ) )
-		x_master.port = BigShort( 20510 );
-	
-	X_ReadBannedList(true);
 	
 	developer = Cvar_Get("developer", "0", 256);
 	sv_running = Cvar_Get("sv_running", "0", 64);
@@ -127,11 +70,6 @@ void SV_Init( void ) {
 	sv_allowDownload = Cvar_Get("sv_allowDownload", "1", 1);
 	Cvar_Get("sv_wwwDownload", "1", 1);
 	Cvar_Get("sv_wwwBaseURL", "", CVAR_SYSTEMINFO | 1);
-	/*sv_master1 = Cvar_Get("sv_master1", "codmaster.activision.com", 0);
-	sv_master2 = Cvar_Get("sv_master2", "", 1);
-	sv_master3 = Cvar_Get("sv_master3", "", 1);
-	sv_master4 = Cvar_Get("sv_master4", "", 1);
-	sv_master5 = Cvar_Get("sv_master5", "", 1);*/
 	sv_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
 	sv_padPackets = Cvar_Get("sv_padPackets", "0", 0);
@@ -143,43 +81,22 @@ void SV_Init( void ) {
 	protocol = Cvar_Get("protocol", "1", 68);
 	shortversion = Cvar_Get("shortversion", "1.1", 68);
 	dedicated = Cvar_Get("dedicated", "2", 64);
-	
-	x_globalbans = Cvar_Get("x_globalbans", "1", 0);
 	x_spectator_noclip = Cvar_Get("x_spectator_noclip", "0", CVAR_ARCHIVE);
-	x_connectmessage = Cvar_Get("x_connectmessage", "", CVAR_ARCHIVE);
 	cl_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_SYSTEMINFO);
 	x_nodownload_paks = Cvar_Get("x_nodownload_paks", "", 0);
-	
 	Cvar_Get("rate", "25000", CVAR_SYSTEMINFO);
 	Cvar_Get("snaps", "40", CVAR_SYSTEMINFO);
-	
 	extern cvar_t *x_cl_adsair;
 	x_cl_adsair = Cvar_Get("x_cl_adsair", "0", 0);
-
 	extern cvar_t *x_cl_bounce;
 	x_cl_bounce = Cvar_Get("x_cl_bounce", "0", CVAR_SYSTEMINFO | 1);
-	
-	cvar_t *x_nopbots = Cvar_Get("x_nopbots", "0", 0);
-	/*
-		NOP SV_BotUsermove calls
-	*/
-	//Would never be true because Cvar_Get w/ default="0": remains 0 in SV_Init even if is 1 in .cfg.
-	/*if(x_nopbots->integer) { 
-		__nop(0x808D152, 5);
-		__nop(0x808D492, 5);
-	}*/
-	
 	#if CODPATCH == 5
 	sv_disableClientConsole = Cvar_Get("sv_disableClientConsole", "0", 8);
 	#endif
-	
 	x_authorize = Cvar_Get("x_authorize", "0", 0);
-	/*was needed for deathrun server to prevent players from blocking each other*/
+	//Used to prevent players from blocking each other
 	x_contents = Cvar_Get("x_contents", "-1", 0);
-	x_stuck = Cvar_Get("x_stuck", "0", 0); 
-	
 	Cvar_Get("codextended", va("CoDExtended %s", CODEXTENDED_VERSION), CVAR_SERVERINFO | CVAR_ROM | CVAR_NORESTART);
-	
 	sv_master[0] = Cvar_Get("sv_master1", "codmaster.activision.com", 0);
 	sv_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);
 	sv_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
@@ -187,16 +104,17 @@ void SV_Init( void ) {
 	sv_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
 	
 	#define MASTER_SERVER_NAME "codmaster.activision.com"
-	
 	cprintf(PRINT_GOOD, "Resolving %s\n", MASTER_SERVER_NAME );
 	if ( NET_StringToAdr( MASTER_SERVER_NAME, &masterAddress ) )
+	{
 		masterAddress.port = BigShort( 20510 );
-				
+	}	
 	#define AUTHORIZE_SERVER_NAME "codauthorize.activision.com"
-	
-	if ( !authorizeAddress.ip[0] && authorizeAddress.type != NA_BAD ) {
+	if ( !authorizeAddress.ip[0] && authorizeAddress.type != NA_BAD )
+	{
 		cprintf(PRINT_GOOD, "Resolving %s\n", AUTHORIZE_SERVER_NAME );
-		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &authorizeAddress ) ) {
+		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &authorizeAddress ) )
+		{
 			cprintf(PRINT_ERR, "Couldn't resolve address\n" );
 			return;
 		}
@@ -206,14 +124,4 @@ void SV_Init( void ) {
 					authorizeAddress.ip[2], authorizeAddress.ip[3],
 					BigShort( authorizeAddress.port ) );
 	}
-}
-
-void SV_Shutdown(char *finalmsg) {
-	void (*o)(char*) = (void(*)(char*))0x808AD8C;
-	o(finalmsg);
-}
-
-void SV_SpawnServer(char *server) {
-	void (*spawnserver)(char*) = (void(*)(char*))0x808A220;
-	spawnserver(server);
 }

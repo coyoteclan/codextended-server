@@ -9,7 +9,7 @@ uFEATUREUNSAFE=false
 DEBUG=false
 DEFINES=""
 
-while getopts “mdu15” qo
+while getopts “mdu1” qo #5
 do
 	case $qo in
 	m)
@@ -26,9 +26,9 @@ do
 	1)
 		PATCHVERSION=1
 		;;
-	5)
-		PATCHVERSION=5
-		;;
+#	5)
+#		PATCHVERSION=5
+#		;;
 	esac
 done
 
@@ -92,13 +92,11 @@ echo "[COMMON]"
 $compiler $params -c cvar.c -o obj/cvar.o
 $compiler $params -c cmd.c -o obj/cmd.o
 $compiler $params -c msg.c -o obj/msg.o
-$compiler $params -c curl.c -o obj/curl.o
 $compiler $params -c util.c -o obj/util.o
 echo "[GAME]"
 $compiler $params -c shared.c -o obj/shared.o
 $compiler $params -c script.c -o obj/script.o
 $compiler $params -c bg_pmove.c -o obj/bg_pmove.o
-$compiler $params -c bg_misc.c -o obj/bg_misc.o
 $compiler $params -c g_utils.c -o obj/g_utils.o
 $compiler $params -c g_spawn.c -o obj/g_spawn.o
 $compiler $params -c g_active.c -o obj/g_active.o
@@ -118,7 +116,6 @@ $compiler $params -c x_clientcmds.c -o obj/x_clientcmds.o
 $compiler $params -c unix_net.c -o obj/unix_net.o
 $compiler $params -c webserver.c -o obj/webserver.o
 echo "[SCRIPT]"
-$compiler $params -c pre.c -o obj/pre.o
 $compiler $params -c scr_method_player.c -o obj/scr_method_player.o
 $compiler $params -c scr_string.c -o obj/scr_string.o
 $compiler $params -c scr_fields.c -o obj/scr_fields.o
@@ -144,4 +141,4 @@ $compiler -m32 -shared -L/lib32 -L./lib -o ../build/codextended.so $obj -Os -s -
 fi
 fi
 find ./obj -name '*.o' ! -name 'duktape.o' -delete
-echo "Done."
+echo -e "\n\nBuild completed.\nFind codextended.so in the build folder.\n"

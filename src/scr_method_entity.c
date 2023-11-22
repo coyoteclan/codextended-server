@@ -19,24 +19,8 @@
 
 int callbackEntityDamage, callbackEntityKilled;
 
-#if 0
-
-static void use( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	int callback;
-	ENTITY* entity = game->getEntity(ent->s.number);
-	if(!entity)
-		return;
-	if(!entity->use)
-		return;
-	callback = entity->use;
-	Scr_AddEntity(activator);
-	int result = Scr_ExecEntThread(ent->s.number, 0, callback, 1);
-	Scr_FreeThread(result);
-}
-
-#endif
-
-static void die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, unsigned int mod) {
+static void die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, unsigned int mod)
+{
 	if(!callbackEntityKilled) {
 		Scr_Error("ERROR: EntityDeath(eAttacker, eInflictor, iDamage, sMeansOfDeath) was not found!");
 		return;
@@ -52,8 +36,8 @@ static void die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int 
     int result = Scr_ExecEntThread(self->s.number, 0, callbackEntityKilled, 4);
     Scr_FreeThread(result);
 }
-
-static void pain(gentity_t* self, gentity_t* attacker, int damage, vec3_t point) {
+static void pain(gentity_t* self, gentity_t* attacker, int damage, vec3_t point)
+{
 	if(!callbackEntityDamage) {
 		Scr_Error("ERROR: EntityDamage(eAttacker, vPoint, iDamage) was not found!");
 		return;
@@ -66,53 +50,23 @@ static void pain(gentity_t* self, gentity_t* attacker, int damage, vec3_t point)
     Scr_FreeThread(result);
 }
 
-#if 0
-// maybe later again
-void ScriptEnt_callback(int a1) {
-    ENTITY* ent = game->getEntity(a1);
-    char* type = Scr_GetString(0);
-    int handle = 0;
-    if(Scr_GetNumParam() == 2)
-        handle = Scr_GetFunc(1);
-    if(!ent)
-        return;
-	int use_as_int = 0;
-    if(strcmp(type, "think") == 0) {
-        ent->think = handle;
-	} else if(!strcmp(type, "use")) {
-		if(handle)
-			use_as_int = (int)use;
-        ent->set(EOFF_USE, &use_as_int, sizeof(int));
-		ent->use = handle;
-    } else if(strcmp(type, "pain") == 0 || strcmp(type, "damage") == 0) {
-        ent->pain = handle;
-    } else if(strcmp(type, "die") == 0 || strcmp(type, "killed") == 0) {
-        ent->die = handle;
-    }
-}
-#endif
-
-void ScriptEnt_GetPosition(int self) {
+void ScriptEnt_GetPosition(int self)
+{
 	gentity_t *ent = &g_entities[self];
 	Scr_AddVector(ent->s.pos.trBase);
 }
-
-void ScriptEnt_SetLight(int ent) {
+void ScriptEnt_SetLight(int ent)
+{
 	gentity_t *e = &g_entities[ent];
 	int r, g, b, i;
 	r = Scr_GetInt(0);
 	g = Scr_GetInt(1);
 	b = Scr_GetInt(2);
 	i = Scr_GetInt(3);
-	
 	e->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 }
-
-void ScriptEnt_PlayAnim(int ent) {
-	gentity_t *e = &g_entities[ent];
-}
-
-void ScriptEnt_SetBounds(int entityNum) {
+void ScriptEnt_SetBounds(int entityNum)
+{
     float width = Scr_GetFloat(0);
     float height = Scr_GetFloat(1);
     gentity_t *ent = &g_entities[entityNum];
@@ -125,63 +79,63 @@ void ScriptEnt_SetBounds(int entityNum) {
 	VectorCopy(mins,ent->absmin);
 	VectorCopy(maxs,ent->absmax);
 }
-
-void ScriptEnt_SetMins(int num) {
+void ScriptEnt_SetMins(int num)
+{
 	gentity_t *ent = &g_entities[num];
 	vec3_t vec;
 	Scr_GetVector(0, vec);
 	VectorCopy(vec,ent->mins);
 }
-
-void ScriptEnt_SetMaxs(int num) {
+void ScriptEnt_SetMaxs(int num)
+{
 	gentity_t *ent = &g_entities[num];
 	vec3_t vec;
 	Scr_GetVector(0, vec);
 	VectorCopy(vec,ent->maxs);
 }
-
-void ScriptEnt_SetAbsMax(int num) {
+void ScriptEnt_SetAbsMax(int num)
+{
 	gentity_t *ent = &g_entities[num];
 	vec3_t vec;
 	Scr_GetVector(0, vec);
 	VectorCopy(vec,ent->absmax);
 }
-
-void Ent_ShowToPlayer(unsigned num) {
-	
-	if(num >= MAX_ENTITIES) {
+void Ent_ShowToPlayer(unsigned num)
+{
+	if(num >= MAX_ENTITIES)
+	{
 		Scr_Error(va("%i is not a valid entity number", num));
 		return;
 	}
 	
 	gentity_t *self = &g_entities[num], *player = NULL;
 	
-	if(Scr_GetType(0) != VT_UNDEFINED)
+	if (Scr_GetType(0) != VT_UNDEFINED)
 		player = Scr_GetEntity(0);
 	
-	if(player == NULL) {
+	if (player == NULL)
+	{
 		self->svFlags &= ~SVF_SINGLECLIENT;
 		self->singleClient = 0;
 		return;
 	}
-	
-	if(!player->client) {
+	if (!player->client)
+	{
 		Scr_Error(va("entity %i is not a player", player->s.number));
 		return;
 	}
-	
 	self->svFlags |= SVF_SINGLECLIENT;
 	self->singleClient = player->s.number;
 }
-
-void ScriptEnt_SetAbsMin(int num) {
+void ScriptEnt_SetAbsMin(int num)
+{
 	gentity_t *ent = &g_entities[num];
 	vec3_t vec;
 	Scr_GetVector(0, vec);
 	VectorCopy(vec,ent->absmin);
 }
-
-void ScriptEnt_SetTakeDamage(int entityIndex) {
+void ScriptEnt_SetTakeDamage(int entityIndex)
+{
     gentity_t *ent = &g_entities[entityIndex];
 	int flag = Scr_GetInt(0);
 	int p = (int)pain, d = (int)die;

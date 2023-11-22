@@ -17,35 +17,37 @@
 
 #include "script.h"
 
-void Scr_ReadOnlyEntityMemberfield(gentity_t *self) {
+void Scr_ReadOnlyEntityMemberfield(gentity_t *self)
+{
 	Scr_Error("Tried to set a read only entity field");
 }
 
-void _Scr_SetOrigin(gentity_t *self) {
+void _Scr_SetOrigin(gentity_t *self)
+{
 	vec3_t org;
 	Scr_GetVector(0, &org);
 	G_SetOrigin(self, org);
 	if(self->linked)
 		T_LinkEntity(self);
 }
-
-void _Scr_SetAngles(gentity_t *self) {
+void _Scr_SetAngles(gentity_t *self)
+{
 	vec3_t angles;
 	Scr_GetVector(0, &angles);
 	G_SetAngle(self, angles);
 }
-
-void _Scr_SetHealth(gentity_t *self) {
+void _Scr_SetHealth(gentity_t *self)
+{
 	int health = Scr_GetInt(0);
 	self->health = health;
 	if(self->client)
 		self->client->ps.health = health;
 	else
 		self->maxhealth = health;
-		
 }
 
-scr_entityfield_t scr_entityfields[] = {
+scr_entityfield_t scr_entityfields[] =
+{
 	{"classname", 374, 3, Scr_ReadOnlyEntityMemberfield},
 	{"origin", 308, 4, _Scr_SetOrigin},
 	{"model", 373, 8, Scr_ReadOnlyEntityMemberfield},

@@ -28,18 +28,6 @@ void (*MSG_WriteShort)(msg_t*,int) = (void(*)(msg_t*,int))0x807F0BC;
 void (*MSG_WriteBigString)(msg_t*,const char*) = (void(*)(msg_t*,const char*))0x807A758;
 void (*SV_SendMessageToClient)(msg_t*,client_t*) = (void(*)(msg_t*,client_t*))0x808F680;
 
-int clientversion = 0;
-
-x_client x_clients[64];
-x_challenge x_challenges[MAX_CHALLENGES] = {0};
-
-long long current_timestamp() {
-    struct timeval te; 
-    gettimeofday(&te, NULL); // get current time
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
-    return milliseconds;
-}
-
 typedef struct {
 	char        *name;
 	void ( *func )( client_t *cl );
@@ -48,16 +36,7 @@ typedef struct {
 //static ucmd_t* ucmds = (ucmd_t*)0x80E2F4C;
 
 void SV_BeginDownload(client_t*);
-void SV_CoDExtended_f(client_t*);
 
-#ifdef xDEBUG
-void sv_sprint( client_t *cl ) {
-	int num = get_client_number( cl );
-	xentities[ num ].sprinting ^= 1;
-	
-	
-}
-#endif
 
 void ucmd_ascii( client_t *cl ) {
 	
@@ -95,7 +74,8 @@ void ucmd_ascii( client_t *cl ) {
 void SV_DoneDownload_f(client_t*);
 void SV_NextDownload_f(client_t *cl);
 
-static ucmd_t ucmds[] = {
+static ucmd_t ucmds[] =
+{
 	{"userinfo", (void*)0x8087B28},
 	{"disconnect", (void*)0x8087AF8},
 	{"cp", (void*)0x808674C},//SV_VerifyPaks_f},
@@ -105,12 +85,6 @@ static ucmd_t ucmds[] = {
 	{"stopdl", (void*)0x8087960},
 	{"donedl", (void*)0x80879FC},
 	{"retransdl", (void*)0x8087A2C},
-	
-	{"codextended", SV_CoDExtended_f},
-	#ifdef xDEBUG
-	{"asc", ucmd_ascii},
-	{"sprint", sv_sprint},
-	#endif
 	{NULL, NULL}
 };
 
@@ -192,45 +166,9 @@ bool is_good_string(char* str) {
 			return 0;
 	return 1;
 }
-
-void SV_XAuthorize(netadr_t from) {
-	int challenge;
-	int i;
-	
-	if(!NET_CompareBaseAdr(from, x_master))
-		return; //not from xtnded master
-	
-	challenge = atoi(Cmd_Argv(1));
-	
-	for(i = 0; i < MAX_CHALLENGES; i++) {
-		if(challenges[i].challenge == challenge)
-			break;
-	}
-	
-	if(i == MAX_CHALLENGES) //not found
-		return;
-		
-	x_challenges[i].bAuthRequested = false;
-		
-	int allowed = atoi(Cmd_Argv(2));
-	char *mUID = Cmd_Argv(3);
-	
-	if(allowed == 0) {
-		x_challenges[i].bCanConnect = -1;
-		return;
-	}
-	
-	if(!*mUID)
-		return;
-	
-	cprintf(PRINT_UNDERLINE | PRINT_GOOD, "mUID: %s\n", mUID);
-	
-	Q_strncpyz(x_challenges[i].mUID, mUID, sizeof(x_challenges[i].mUID));
-	x_challenges[i].bCanConnect = 1;
-}
-
-void SV_AuthorizeIpPacket( netadr_t from ) {
-	return; //auth srv nty
+void SV_AuthorizeIpPacket( netadr_t from )
+{
+	return; //auth srv
 	
 	int challenge;
 	int i;
@@ -277,7 +215,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		return;
 	}
 	if ( !Q_stricmp( s, "accept" ) || !x_authorize->integer) {
-		x_challenges[i].guid = guid;
+		//x_challenges[i].guid = guid;
 		
 		if ( sv_onlyVisibleClients->integer ) {
 			NET_OutOfBandPrint( NS_SERVER, challenges[i].adr,
@@ -447,10 +385,9 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	strcat( s, newi );
 }
 
-//FROM PROPOSER COMPONENT
 void custom_SV_SendClientGameState(client_t *client)
 {
-	cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### custom_SV_SendClientGameState \n");
+	//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### custom_SV_SendClientGameState \n");
 	last_cl = client;
 
 	int start;
@@ -511,7 +448,6 @@ void custom_SV_SendClientGameState(client_t *client)
 	Com_DPrintf("Sending %i bytes in gamestate to client: %i\n", msg.cursize, get_client_number(client));
 	SV_SendMessageToClient(&msg, client);
 }
-//FROM PROPOSER COMPONENT END
 
 void custom_SV_ExecuteClientMessage(client_t *cl, msg_t *msg)
 {
@@ -629,7 +565,8 @@ void SV_NextDownload_f(client_t *cl) {
 	#endif
 }
 
-void SV_DirectConnect( netadr_t from ) {
+void SV_DirectConnect(netadr_t from)
+{
 	void (*call)(netadr_t);
 	#if CODPATCH == 1
 	*(int*)&call = 0x8085498;
@@ -641,253 +578,181 @@ void SV_DirectConnect( netadr_t from ) {
 	client_t *cl, *newcl;
 	
 	char userinfo[MAX_INFO_STRING];
-	
 	Q_strncpyz(userinfo, Cmd_Argv(1), sizeof(userinfo));
-	
+
 	int version = atoi(Info_ValueForKey(userinfo, "protocol"));
 	#define PROTOCOL_VERSION 1
-	
-	if(from.type != NA_BOT) {
-		
-	if(version != PROTOCOL_VERSION) {
-		NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_SERVER_IS_DIFFERENT_VERSION\n");
-		return;
-	}
-	
-	challenge = atoi(Info_ValueForKey(userinfo, "challenge"));
-	qport = atoi(Info_ValueForKey(userinfo, "qport"));
-	
-	list_each(banInfo_t*, cur, banlist) {
-		if(cur->type == IPBAN && NET_CompareBaseAdr(from, cur->adr)) {
-			char *reason = (*cur->reason) ? cur->reason : x_bannedmessage->string;
-			NET_OutOfBandPrint( NS_SERVER, from, "error\n%s", reason);
-			printf("Banned IP [%s] tried to connect.\n", NET_BaseAdrToString(from));
+	if (from.type != NA_BOT)
+	{
+		if (version != PROTOCOL_VERSION)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_SERVER_IS_DIFFERENT_VERSION\n");
 			return;
 		}
-	}
-	
-	for ( i = 0,cl = getclient(0); i < sv_maxclients->integer ; i++) {
-		cl = getclient(i);
-		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
-			 && ( cl->netchan.qport == qport
-				  || from.port == cl->netchan.remoteAddress.port ) ) {
-			if ( ( svs_time - cl->lastConnectTime )
-				 < ( sv_reconnectlimit->integer * 1000 ) ) {
-				Com_DPrintf( "%s:reconnect rejected : too soon\n", NET_AdrToString( from ) );
-				return;
-			}
-			break;
-		}
-	}
-	
-	for(i = 0; i < MAX_CHALLENGES; i++) {
-		if(NET_CompareAdr(from, challenges[i].adr)) {
-			if(challenges[i].challenge == challenge)
+		challenge = atoi(Info_ValueForKey(userinfo, "challenge"));
+		qport = atoi(Info_ValueForKey(userinfo, "qport"));
+
+		for (i = 0, cl = getclient(0); i < sv_maxclients->integer; i++)
+		{
+			cl = getclient(i);
+			if (NET_CompareBaseAdr(from, cl->netchan.remoteAddress)
+				&& (cl->netchan.qport == qport || from.port == cl->netchan.remoteAddress.port))
+			{
+				if ((svs_time - cl->lastConnectTime) < (sv_reconnectlimit->integer * 1000))
+				{
+					Com_DPrintf( "%s:reconnect rejected : too soon\n", NET_AdrToString( from ) );
+					return;
+				}
 				break;
-		}
-	}
-	
-	if(i == MAX_CHALLENGES) {
-		NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_BAD_CHALLENGE");
-		return;
-	}
-	
-	if(!x_challenges[i].bAuthRequested) {
-		if(!*x_challenges[i].mUID) {
-			NET_OutOfBandPrint(NS_SERVER, x_master, "getXAuthorize %i %i.%i.%i.%i %i %i",  challenges[i].challenge,
-								from.ip[0], from.ip[1], from.ip[2], from.ip[3], from.port, qport);
-			x_challenges[i].bAuthRequested = true;
-		}
-	}
-	
-	i_challenge = i;
-	
-	time_t now = time(NULL);
-	if(!x_challenges[i].msgtime)
-		x_challenges[i].msgtime = time(NULL);
-	
-	if(difftime(now, x_challenges[i].msgtime) < 3) {
-		if(x_connectmessage->string[0])
-			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", x_connectmessage->string);
-		return;
-	}
-	
-	if(x_challenges[i].bAuthRequested) {
-		if(svs_time - challenges[i].pingTime < 2500) //time out if master is offline
-			return;
-		x_challenges[i].bAuthRequested = false;
-	}
-	
-	if(x_challenges[i].bCanConnect == -1) {
-		NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_SERVER_DISCONNECTED");
-		return;
-	}
-	
-	{ //redefinitions macro
-		list_each(banInfo_t*, cur, banlist) {
-			if(cur->type == MUIDBAN && !strcmp(x_challenges[i].mUID, cur->mUID)) {
-				char *reason = (*cur->reason) ? cur->reason : x_bannedmessage->string;
-				NET_OutOfBandPrint( NS_SERVER, from, "error\n%s", reason);
-				printf("Banned mUID [%s:%s] tried to connect.\n", NET_BaseAdrToString(from), cur->mUID);
-				return;
 			}
 		}
+		for(i = 0; i < MAX_CHALLENGES; i++)
+		{
+			if (NET_CompareAdr(from, challenges[i].adr))
+			{
+				if(challenges[i].challenge == challenge)
+					break;
+			}
+		}
+		if (i == MAX_CHALLENGES)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_BAD_CHALLENGE");
+			return;
+		}
+		
+		i_challenge = i;
+
+
+
+		Info_SetValueForKey(userinfo, "ip", NET_AdrToString(from));
+		
+		if (!challenges[i].firstPing)
+		{
+			ping = svs_time - challenges[i].pingTime;
+			challenges[i].firstPing = ping;
+		}
+		else
+		{
+			ping = challenges[i].firstPing;
+		}
+
+		if (sv_minPing->integer && ping < sv_minPing->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_ERR_HIGH_PING_ONLY");
+			cprintf(PRINT_INFO | PRINT_DEBUG, "Client %i got rejected on a too low ping.\n", i);
+			return;
+		}
+		if (sv_maxPing->integer && ping > sv_maxPing->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_ERR_LOW_PING_ONLY");
+			cprintf(PRINT_INFO | PRINT_DEBUG, "Client %i got rejected on a too high ping: %i\n", i, ping);
+		}
+
+		cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "Client %i connecting | Ping: %i\n", i, ping);
+		challenges[i].connected = qtrue;
 	}
-	
-	char* check_name = Info_ValueForKey(userinfo, "name");
-	if(!is_good_string(check_name)) {
-		NET_OutOfBandPrint( NS_SERVER, from, "error\nIllegal name.");
-		return;
-	}
-	#if 0
-	if(strcmp(check_name, "php")) {
-		NET_OutOfBandPrint(NS_SERVER, from, "error\nkthxnbai m8\n");
-		return;
-	}
-	#endif
-	
-	Info_SetValueForKey(userinfo, "ip", NET_AdrToString(from));
-	
-	if(!challenges[i].firstPing) {
-		ping = svs_time - challenges[i].pingTime;
-		challenges[i].firstPing = ping;
-	} else
-		ping = challenges[i].firstPing;
-	#if 0
-	if(sv_minPing->integer && ping < sv_minPing->integer) {
-		NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_ERR_HIGH_PING_ONLY");
-		cprintf(PRINT_INFO | PRINT_DEBUG, "Client %i got rejected on a too low ping.\n", i);
-		return;
-	}
-	
-	if(sv_maxPing->integer && ping > sv_maxPing->integer) {
-		NET_OutOfBandPrint(NS_SERVER, from, "error\nEXE_ERR_LOW_PING_ONLY");
-		cprintf(PRINT_INFO | PRINT_DEBUG, "Client %i got rejected on a too high ping: %i\n", i, ping);
-	}
-	#endif
-	
-	cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "Client %i connecting | Ping: %i\n", i, ping);
-	challenges[i].connected = qtrue;
-	} else
+	else
+	{
 		cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "Bot %i connecting\n", i);
-	
+	}
+		
 	client_t temp;
-	
 	newcl = &temp;
 	memset(newcl, 0, sizeof(client_t));
 	
-	for(i = 0, cl = getclient(0); i < sv_maxclients->integer; i++) {
+	for (i = 0, cl = getclient(0); i < sv_maxclients->integer; i++)
+	{
 		cl = getclient(i);
 		if(cl->state == CS_FREE)
 			continue;
-		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress ) && ( cl->netchan.qport == qport || from.port == cl->netchan.remoteAddress.port ) ) {
+
+		if (NET_CompareBaseAdr(from, cl->netchan.remoteAddress)
+			&& (cl->netchan.qport == qport || from.port == cl->netchan.remoteAddress.port))
+		{
 			cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "Client (%s) is reconnecting\n", NET_AdrToString(from));
 			if(cl->state > 1)
 				SV_FreeClient(cl);
-			
 			newcl = cl;
 			goto gotnewcl;
 		}
 	}
+
 	int startIndex;
-	
 	char *password = Info_ValueForKey( userinfo, "password" );
-	if ( !strcmp( password, sv_privatePassword->string ) ) {
+	if (!strcmp(password, sv_privatePassword->string))
+	{
 		startIndex = 0;
-	} else {
+	}
+	else
+	{
 		// skip past the reserved slots
 		startIndex = sv_privateClients->integer;
 	}
 
 	newcl = NULL;
-	for ( i = startIndex; i < sv_maxclients->integer ; i++ ) {
+	for (i = startIndex; i < sv_maxclients->integer; i++)
+	{
 		cl = getclient(i);
-		if ( cl->state == CS_FREE ) {
+		if (cl->state == CS_FREE)
+		{
 			newcl = cl;
 			break;
 		}
 	}
 	
-	if(!newcl) {
+	if (!newcl)
+	{
 		NET_OutOfBandPrint( NS_SERVER, from, "error\nEXE_SERVERISFULL");
-		Com_DPrintf( "Rejected a connection.\n" );
+		Com_DPrintf("Rejected a connection.\n");
 		return;
 	}
-	
-	/* reliableSequence and reliableAcknowledge */
+
 	cl->reliableAcknowledge = 0;
 	cl->reliableSequence = 0;
 	
 	gotnewcl:
-	
+
 	*newcl = temp;
 	clientNum = newcl - *clients;
-	memset(&xclients[clientNum], 0, sizeof(xclient_t));
+	//memset(&xclients[clientNum], 0, sizeof(xclient_t));
+	/*
 	if(from.type != NA_BOT)
 		Q_strncpyz(xclients[clientNum].mUID, x_challenges[i_challenge].mUID, sizeof(xclients[clientNum])); //copy mUID from challenge to xclients
-	
+	*/
 	newcl->gentity = (unsigned)SV_GentityNum(clientNum);
 	unsigned short (*Scr_AllocArray)() = (unsigned short(*)())0x80A2610;
 	*(unsigned short*)((unsigned)newcl + 370928) = Scr_AllocArray();
 	
 	newcl->challenge = challenge;
 	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport);
-	
+
 	Q_strncpyz(newcl->userinfo, userinfo, sizeof(newcl->userinfo));
 	
 	char *denied = (char*)VM_Call(*(int*)0x80E30C4, 2, clientNum, *(unsigned short*)((unsigned)newcl + 370928));
-	
-	if(denied) {
-		NET_OutOfBandPrint( NS_SERVER, from, "error\n%s", denied );
+	if (denied)
+	{
+		NET_OutOfBandPrint(NS_SERVER, from, "error\n%s", denied);
 		SV_FreeClient(newcl);
 		return;
 	}
-	
+
 	SV_UserinfoChanged(newcl);
 	
 	if(from.type != NA_BOT)
 		challenges[i_challenge].firstPing = 0;
 	
 	NET_OutOfBandPrint(NS_SERVER, from, "connectResponse");
-	
-	cprintf(PRINT_GOOD, "Going from CS_FREE to CS_CONNECTED for Client %i : %s\n", clientNum, newcl->name );
-	
-	//SV_CoDExtended_f(newcl);
-	
-	
-	#if 0
-	byte msg_buf[16384];
-	msg_t msg;
-	
-	MSG_Init( &msg, msg_buf, sizeof( msg_buf ) );
-	
-	MSG_WriteLong( &msg, cl->lastClientCommand );
-    MSG_WriteByte( &msg, svc_download );
-    MSG_WriteShort( &msg, -1 );         // block != 0, for fast return
-    MSG_WriteShort( &msg, 16384 + 32 ); // amount of bytes to copy
-    for(i = 0; i < 16384; i++) {        // overwrite the data buffer
-        MSG_WriteByte(&msg, 2);      // 0x00 for saving space
-    }
-    for(i = 0; i < 32; i++) {           // do the rest of the job
-        MSG_WriteByte(&msg, 'a' + i);       // return address: 0x61616161
-    }
-    SV_SendMessageToClient( &msg, newcl );
-	#endif //keep if u wanna buffer overrun clients
-	
-	
-	
+	cprintf(PRINT_GOOD, "Going from CS_FREE to CS_CONNECTED for Client %i : %s\n", clientNum, newcl->name);
 	
 	newcl->state = CS_CONNECTED;
 	newcl->nextSnapshotTime = svs_time;
 	newcl->lastPacketTime = svs_time;
 	newcl->lastConnectTime = svs_time;
-	
 	newcl->gamestateMessageNum = -1;
-	
-	/* do heartbeat here for master */
 }
 
-void SV_GetChallenge(netadr_t *from) {
+void SV_GetChallenge(netadr_t *from)
+{
 	// Prevent using getchallenge as an amplifier
 	if (SVC_RateLimitAddress(*from, 10, 1000)) {
 		Com_DPrintf("SV_GetChallenge: rate limit from %s exceeded, dropping request\n", NET_AdrToString(*from));
@@ -925,9 +790,9 @@ void SV_GetChallenge(netadr_t *from) {
 		challenge->firstPing = 0;
 		challenge->time = svs_time;
 		challenge->connected = qfalse;
-		x_challenges[oldest].bCanConnect = 0;
-		x_challenges[oldest].bAuthRequested = false;
-		x_challenges[oldest].msgtime = 0;
+		//x_challenges[oldest].bCanConnect = 0;
+		//x_challenges[oldest].bAuthRequested = false;
+		//x_challenges[oldest].msgtime = 0;
 		i = oldest;
 	}
 	
@@ -1014,18 +879,12 @@ void SV_UserinfoChanged( client_t* cl ) {
 		newname[j++] = request_name[i];
 	}
 	
-	if(!x_clients[ get_client_number( cl ) ].namemuted) {
-	
-		Q_strncpyz(cl->name, newname, sizeof(cl->name));
-		
-		/*g_client = (int*)(g_clients + 8900 * get_client_number(cl));
-		char* netname = (char*)(g_client + 2157);
-		Q_strncpyz((char*)(g_client + 2157), newname, sizeof(cl->name));*/
-		
-		//game module won't fix the name in manual_change
-		
-		Info_SetValueForKey(cl->userinfo, "name", newname);
-	}
+	Q_strncpyz(cl->name, newname, sizeof(cl->name));
+	Info_SetValueForKey(cl->userinfo, "name", newname);
+
+
+
+
 	
 	val = Info_ValueForKey( cl->userinfo, "rate" );
 	if ( strlen( val ) ) {
@@ -1092,127 +951,71 @@ void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *msg) {
 	G_Say(ent, NULL, mode, line);
 }
 
-int last_client_number = 0;
-
 extern int callbackPlayerCommand;
 
-int QDECL SV_ClientCommand(client_t *cl, msg_t *msg) {
+int QDECL SV_ClientCommand(client_t *cl, msg_t *msg)
+{
 	int seq, clientNum;
 	const char *s;
 	char *cmd;
-	
 	qboolean clientOk = qtrue;
 	qboolean floodprotect = qtrue;
-
 	clientNum = get_client_number(cl);
-	
 	seq = MSG_ReadLong(msg);
 	s = MSG_ReadString(msg);
 
-	if(cl->lastClientCommand >= seq)
+	if (cl->lastClientCommand >= seq)
 		return qtrue;
 
-	Com_DPrintf( "clientCommand: %s : %i : %s\n", cl->name, seq, s );
+	Com_DPrintf( "clientCommand: %s : %i : %s\n", cl->name, seq, s);
 
-	if(seq > cl->lastClientCommand + 1) {
-		Com_Printf( "Client %s lost %i clientCommands\n", cl->name,
-					seq - cl->lastClientCommand + 1 );
-		SV_DropClient( cl, "EXE_LOSTRELIABLECOMMANDS" );
+	if (seq > cl->lastClientCommand + 1)
+	{
+		Com_Printf("Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1);
+		SV_DropClient(cl, "EXE_LOSTRELIABLECOMMANDS");
 		return qfalse;
 	}
 
 	if(!strncmp("team", s, 4) || !strncmp("score", s, 5) || !strncmp("mr", s, 2))
 		floodprotect = qfalse;
-
 	if(cl->state >= CS_ACTIVE && svs_time < *(int*)(&cl->state + 68360) && floodprotect)
 		clientOk = qfalse;
-
 	if(floodprotect)
 		*(int*)((int)&cl->state + 68360) = svs_time + 800;
 
 	ucmd_t *u;
 	qboolean bProcessed = qfalse;
-
 	Cmd_TokenizeString(s);
-
 	cmd = Cmd_Argv(0);
 	
-	for( u = ucmds; u->name; u++) {
-		if(!strcmp(cmd, u->name)) {
+	for (u = ucmds; u->name; u++)
+	{
+		if (!strcmp(cmd, u->name))
+		{
 			u->func(cl);
 			bProcessed = qtrue;
 			break;
 		}
 	}
 
-	if(clientOk) {
-		if(!u->name && *(int*)0x8355260 == 2) {
-			
-			//long long timestamp = current_timestamp();
-			
-			#if 0
-			int result ;
-			
-			if(callbackPlayerCommand) {
-				Scr_AddInt(clientNum);
-				result = Scr_ExecEntThread(clientNum, 0, callbackPlayerCommand, 1);
-				Scr_FreeThread(result);
-			}
-			#endif
-			
-			if(!Q_stricmp(cmd, "follownext") || !Q_stricmp(cmd, "followprev") || !Q_stricmp(cmd, "gc"))
+	if (clientOk)
+	{
+		if (!u->name && *(int*)0x8355260 == 2)
+		{
+			if (!Q_stricmp(cmd, "follownext")
+				|| !Q_stricmp(cmd, "followprev")
+				|| !Q_stricmp(cmd, "gc"))
+			{
 				goto skip_vm_call;
-			
-			if(!Q_stricmp(cmd, "say_team") || !Q_stricmp(cmd, "say_team")) {
-				if(x_clients[clientNum].muted)
-					goto skip_vm_call;
 			}
-			
-			VM_Call(*(int*)0x80E30C4, 6, get_client_number( cl )); //works
-			//VM_Call(gvm, GAME_CLIENT_COMMAND, get_client_number( cl ));
-			//((int (*)(int,...))GAME("vmMain"))(6,get_client_number(cl));
-			//((void (QDECL *)(int))GAME("ClientCommand"))(get_client_number(cl));
+			VM_Call(*gvm, GAME_CLIENT_COMMAND, clientNum);
 		}
 	}
-	
+
 	skip_vm_call:
-	
 	cl->lastClientCommand = seq;
 	Com_sprintf(cl->lastClientCommandString, sizeof(cl->lastClientCommandString), "%s", s);
 	return 1;
-	
-	#if 0
-
-	last_client_number = (((int)&cl->state - *(int*)svsclients_ptr) / clientsize);
-	Com_DPrintf("last_client_number = %d\n", last_client_number);
-
-	return ((qboolean (*) (client_t*, msg_t*))0x8086E08)(cl, msg);
-	#endif
-}
-
-void SV_CoDExtended_f( client_t *cl ) {
-	#if 0
-	byte msg_buf[16384];
-	msg_t msg;
-	
-	MSG_Init( &msg, msg_buf, sizeof( msg_buf ) );
-	
-	MSG_WriteLong( &msg, cl->lastClientCommand );
-	
-	MSG_WriteByte(&msg,svc_serverCommand);
-	//MSG_WriteLong(&msg, *(int*)((int)cl + 67088) + 1);
-	MSG_WriteLong(&msg, cl->reliableAcknowledge);
-	MSG_WriteBigString(&msg, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-	//MSG_WriteString(&msg,"v \"cl_allowdownload\" \"1\"");
-	MSG_WriteByte(&msg,svc_EOF); //end?
-	//check for overflow i doubt it tho
-	
-	SV_SendMessageToClient(&msg, cl);
-	#endif
-	
-	void (*SV_AddServerCommand)(client_t *, int, const char*) = (void(*)(client_t*,int,const char*))0x808B680;
-	
-	SV_SendServerCommand(cl, 0, "e \"This server is powered by CoDExtended.\n^2Thanks for playing %s\"", cl->name);
 }
 
 
@@ -1249,7 +1052,7 @@ int CL_GetGuid(client_t* cl) {
 	challenge = &challenges[0];
 	for (int j = 0 ; j < MAX_CHALLENGES ; j++, challenge++ ) {
 		if (NET_CompareAdr( cl->netchan.remoteAddress, challenge->adr ) ) {
-			guid = x_challenges[j].guid;
+			//guid = x_challenges[j].guid;
 			break;
 		}
 	}

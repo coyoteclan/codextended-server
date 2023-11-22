@@ -910,4 +910,3 @@ float _VectorDistance( vec3_t v1, vec3_t v2 ) {
 	VectorSubtract( v2, v1, dir );
 	return VectorLength( dir );
 }
-// done.

@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <net/if.h>
 
-void SV_NocPacket(netadr_t,msg_t*);
+//void SV_NocPacket(netadr_t,msg_t*);
 
 void SockadrToNetadr( struct sockaddr_in *s, netadr_t *a ) {
 	*(int *)&a->ip = *(int *)&s->sin_addr;
@@ -86,7 +86,7 @@ qboolean    Sys_GetPacket( netadr_t *net_from, msg_t *net_message ) {
 		}
 
 		net_message->cursize = ret;
-		SV_NocPacket(*net_from, net_message);
+		//SV_NocPacket(*net_from, net_message);
 		return qtrue;
 	}
 

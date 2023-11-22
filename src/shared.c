@@ -17,8 +17,6 @@
 
 #include "shared.h"
 
-xentity_t xentities[1024];
-
 void* gamelib;
 int base;
 char (*pml)[140];
@@ -57,7 +55,6 @@ char* modNames[] = {
 
 #if CODPATCH == 1
 _Cmd_AddCommand_t _Cmd_AddCommand = (_Cmd_AddCommand_t)0x805AEF8;
-//Com_Printf_t _STRIP Com_Printf = (Com_Printf_t)0x806B760;
 DECLARE_F(Com_Printf, 0x806B760);
 Com_DPrintf_t _STRIP Com_DPrintf = (Com_DPrintf_t)0x806B79C;
 Com_Error_t _STRIP Com_Error = (Com_Error_t)0x806B93C;
@@ -75,7 +72,6 @@ Cmd_Argv_t Cmd_Argv = (Cmd_Argv_t)0x80600F4;
 Cmd_Argc_t Cmd_Argc = (Cmd_Argc_t)0x80600EA;
 Cmd_ArgvBuffer_t Cmd_ArgvBuffer = (Cmd_ArgvBuffer_t)0x806014B;
 Cmd_TokenizeString_t Cmd_TokenizeString = (Cmd_TokenizeString_t)0x8060423;
-
 VM_Call_t VM_Call = (VM_Call_t)0x809AFBC;
 #endif
 
@@ -629,32 +625,30 @@ previous strings
 ============
 */
 
-char    * _STRIP QDECL va( char *format, ... ) {
+char * _STRIP QDECL va( char *format, ... )
+{
 	va_list argptr;
 	#define MAX_VA_STRING   32000
 	static char temp_buffer[MAX_VA_STRING];
-	static char string[MAX_VA_STRING];      // in case va is called by nested functions
+	static char string[MAX_VA_STRING]; // in case va is called by nested functions
 	static int index = 0;
-	char    *buf;
+	char *buf;
 	int len;
 
+	va_start(argptr, format);
+	vsprintf(temp_buffer, format,argptr);
+	va_end(argptr);
 
-	va_start( argptr, format );
-	vsprintf( temp_buffer, format,argptr );
-	va_end( argptr );
-
-	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING ) {
+	if ((len = strlen(temp_buffer)) >= MAX_VA_STRING)
+	{
 		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()\n" );
 	}
-
-	if ( len + index >= MAX_VA_STRING - 1 ) {
+	if (len + index >= MAX_VA_STRING - 1)
+	{
 		index = 0;
 	}
-
 	buf = &string[index];
 	memcpy( buf, temp_buffer, len + 1 );
-
 	index += len + 1;
-
 	return buf;
 }

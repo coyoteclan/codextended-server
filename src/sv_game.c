@@ -15,7 +15,6 @@
     along with CoDExtended.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "bg_public.h"
 #include "server.h"
 #include "script.h"
 
@@ -28,23 +27,18 @@ T_LinkEntity_t T_LinkEntity;
 BG_EvaluateTrajectory_t BG_EvaluateTrajectory;
 BG_EvaluateTrajectoryDelta_t BG_EvaluateTrajectoryDelta;
 
-void set_trap_func_ptr( void ) {
+void set_trap_func_ptr( void )
+{
 	T_SetBrushModel = (T_SetBrushModel_t)GAME("trap_SetBrushModel");
 	T_LinkEntity = (T_LinkEntity_t)GAME("trap_LinkEntity");
 	T_UnlinkEntity = (T_UnlinkEntity_t)GAME("trap_UnlinkEntity");
-	G_Spawn = (G_Spawn_t)GAME("G_Spawn");
 	G_SetOrigin = (G_SetOrigin_t)GAME("G_SetOrigin");
 	G_SetAngle = (G_SetAngle_t)GAME("G_SetAngle");
 	BG_EvaluateTrajectory = (BG_EvaluateTrajectory_t)GAME("BG_EvaluateTrajectory");
 	BG_EvaluateTrajectoryDelta = (BG_EvaluateTrajectoryDelta_t)GAME("BG_EvaluateTrajectoryDelta");
 	
-	G_FreeEntity = (G_FreeEntity_t)GAME("G_FreeEntity");
-	
 	void _Scr_FreeEntity(gentity_t*);
 	__jmp(GAME("Scr_FreeEntity"), (unsigned)_Scr_FreeEntity);
-	void _SpectatorClientEndFrame(gentity_t*);
-	//__jmp(GAME("SpectatorClientEndFrame"), _SpectatorClientEndFrame);
-	__call(GAME("ClientEndFrame")+0x98, (unsigned)_SpectatorClientEndFrame);
 	
 	#if 0
 	scr_entityfield_t *fields = (scr_entityfield_t*)( GAME("vmMain") + 0x28094 );

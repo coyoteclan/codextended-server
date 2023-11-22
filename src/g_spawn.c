@@ -17,32 +17,26 @@
 
 #include "script.h"
 #include "server.h"
-#include "bg_public.h"
 
 extern gitem_t *bg_itemlist;
-
-typedef struct {
-	char    *name;
+typedef struct
+{
+	char *name;
 	void ( *spawn )( gentity_t *ent );
 } spawn_t;
-
-void SP_misc_portal_camera(gentity_t*);
 void SP_misc_portal_surface(gentity_t*);
-
-spawn_t custom_spawns[] = {
-	{"misc_portal_camera", SP_misc_portal_camera},
+spawn_t custom_spawns[] =
+{
 	{"misc_portal_surface", SP_misc_portal_surface},
 	{NULL, NULL}
 };
 
-int (*G_SpawnFloat)( const char *key, const char *defaultString, float *out);
-int (*G_SpawnString)( const char *key, const char *defaultString, char **out);
 void (*G_SpawnItem)(gentity_t*,gitem_t*);
-
-int G_CallSpawnEntity(gentity_t *ent) {
+int G_CallSpawnEntity(gentity_t *ent)
+{
 	char *classname = NULL;
-
-	if(ent->classname) {
+	if(ent->classname)
+	{
 		classname = SL_ConvertToString(ent->classname);
 		gitem_t *item = NULL;
 		gitem_t *start = bg_itemlist;
@@ -55,14 +49,12 @@ int G_CallSpawnEntity(gentity_t *ent) {
 		}
 		
 		spawn_t *sp = (spawn_t*)GAME("spawns");
-		
 		for(;sp->name!=NULL;sp++) {
 			if(!strcmp(sp->name, classname)) {
 				sp->spawn(ent);
 				return 1;
 			}
 		}
-		
 		for(sp = custom_spawns; sp->name != NULL; sp++) {
 			if(!strcmp(sp->name, classname)) {
 				cprintf(PRINT_UNDERLINE,"[SPAWN] %s",classname);
@@ -75,18 +67,14 @@ int G_CallSpawnEntity(gentity_t *ent) {
 	return 0;
 }
 
-void SP_misc_portal_camera(gentity_t *ent) {
-}
-
-void SP_misc_portal_surface(gentity_t *ent) {
+void SP_misc_portal_surface(gentity_t *ent)
+{
 	VectorClear( ent->mins );
 	VectorClear( ent->maxs );
 	T_LinkEntity( ent );
-
 	#define SVF_PORTAL 0x40
 	ent->svFlags = ent->spawnflags;
 	ent->s.eType = ET_PORTAL;
-
 	#if 0
 	if ( !ent->target ) {
 		VectorCopy( ent->s.origin, ent->s.origin2 );
@@ -98,10 +86,8 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	VectorCopy(ent->currentOrigin, ent->s.origin2);
 }
 
-void init_g_spawn() {
-	G_SpawnFloat = (int(*)(const char*,const char*,float*))GAME("G_SpawnFloat");
-	G_SpawnString = (int(*)(const char*,const char*,char**))GAME("G_SpawnString");
+void init_g_spawn()
+{
 	G_SpawnItem = (void(*)(gentity_t*,gitem_t*))GAME("G_SpawnItem");
-	
 	__jmp( GAME("G_CallSpawnEntity"), (int)G_CallSpawnEntity);
 }

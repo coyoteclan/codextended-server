@@ -47,21 +47,20 @@
 #define svs_time (*(int*)0x83CCD88)
 #endif
 
-extern int clientversion;
-
-typedef enum {
+typedef enum
+{
 	svc_bad,
 	svc_nop,
 	svc_gamestate,
-	svc_configstring,           // [short] [string] only in gamestate messages
-	svc_baseline,               // only in gamestate messages
-	svc_serverCommand,          // [string] to be executed by client game module
-	svc_download,               // [short] size [size bytes]
+	svc_configstring,		// [short] [string] only in gamestate messages
+	svc_baseline,			// only in gamestate messages
+	svc_serverCommand,		// [string] to be executed by client game module
+	svc_download,			// [short] size [size bytes]
 	svc_snapshot,
 	svc_EOF
-} svc_ops_e; //not really server only it's for client aswell
-
-static char *svc_strings[256] = {
+} svc_ops_e; //it's for client aswell
+static char *svc_strings[256] =
+{
 	"svc_bad",
 	"svc_nop",
 	"svc_gamestate",
@@ -73,52 +72,36 @@ static char *svc_strings[256] = {
 	"svc_EOF"
 };
 
-typedef enum {
+typedef enum
+{
 	NA_BOT,
-	NA_BAD,                 // an address lookup failed
+	NA_BAD, // an address lookup failed
 	NA_LOOPBACK,
 	NA_BROADCAST,
 	NA_IP,
 	NA_IPX,
 	NA_BROADCAST_IPX
 } netadrtype_t;
-
-typedef enum {
+typedef enum
+{
 	NS_CLIENT,
 	NS_SERVER
 } netsrc_t;
-
-typedef struct {
+typedef struct
+{
 	netadrtype_t type;
-	union {
+	union
+	{
 		byte ip[4];
 		unsigned int _ip;
 	};
 	byte ipx[10];
-
 	unsigned short port;
 } netadr_t; //size = 0x14 (20)
 
-typedef enum {
-	MUIDBAN,
-	IPBAN
-} ban_types;
-
-typedef struct {
-	int type; //ban_types
-	char mUID[33];
-	netadr_t adr;
-	char reason[128];
-} banInfo_t;
-
-extern LinkedList banlist;
-
-extern char x_mastername[14];
-extern netadr_t x_master;
-
 #define MAX_CHALLENGES 1024
-
-typedef struct {
+typedef struct
+{
 	netadr_t adr; //0
 	int challenge; //20
 	int time; //24
@@ -132,17 +115,18 @@ typedef struct {
 	#endif
 } challenge_t;
 
-typedef struct {
-  int idk33[4];
-  int svFlags;
-  int singleClient;
-  char pad[256];
-  int idk;
+typedef struct
+{
+	int idk33[4];
+	int svFlags;
+	int singleClient;
+	char pad[256];
+	int idk;
 } entityShared_t;
-
-typedef struct {
-  entityState_t s;
-  entityShared_t r;
+typedef struct
+{
+	entityState_t s;
+	entityShared_t r;
 } sharedEntity_t;
 
 typedef sharedEntity_t* (*SV_GentityNum_t)( int num );
@@ -153,15 +137,13 @@ typedef void (*SV_GetConfigstring_t)( int index, char *buffer, int bufferSize );
 extern SV_GetConfigstring_t SV_GetConfigstring;
 extern SV_SetConfigstring_t SV_SetConfigstring;
 
-
-void SV_GetChallenge( netadr_t* from );
-void SV_Init( void );
-void SV_DirectConnect( netadr_t from );
-void SV_AuthorizeIpPacket( netadr_t from );
-
+void SV_Init(void);
+void SV_GetChallenge(netadr_t* from);
+void SV_AuthorizeIpPacket(netadr_t from);
+void SV_DirectConnect(netadr_t from);
 void SV_MasterHeartBeat(const char*);
 
-extern cvar_t  *sv_maxclients;
+extern cvar_t *sv_maxclients;
 extern cvar_t *sv_privateClients;
 extern cvar_t *g_gametype;
 extern cvar_t *mapname;
@@ -202,23 +184,16 @@ extern cvar_t* sv_running;
 extern cvar_t *sv_disableClientConsole;
 #endif
 
-extern cvar_t *x_globalbans;
-extern cvar_t *x_bannedmessage;
 extern cvar_t *x_contents;
-extern cvar_t *x_stuck;
 extern cvar_t *x_deadchat;
 extern cvar_t *x_authorize;
 extern cvar_t *x_spectator_noclip;
-extern cvar_t *x_connectmessage;
 
 extern cvar_t *cl_allowDownload; //the client will locally change any cvars to match the SYSTEMINFO cvars
 extern cvar_t *x_nodownload_paks;
 
 #define MAX_MASTER_SERVERS 5
 extern cvar_t* sv_master[MAX_MASTER_SERVERS];
-
-extern char x_print_connect_message[1024];
-extern char SVC_CHANDELIER[12];
 
 typedef void (QDECL *NET_OutOfBandPrint_t)( netsrc_t net_socket, netadr_t adr, const char *format, ... );
 extern NET_OutOfBandPrint_t NET_OutOfBandPrint;
@@ -230,17 +205,15 @@ const char  *NET_BaseAdrToString (netadr_t a);
 const char  *NET_AdrToString (netadr_t a);
 qboolean    NET_CompareAdr( netadr_t a, netadr_t b );
 qboolean    NET_CompareBaseAdr( netadr_t a, netadr_t b );
-bool	   NET_IsLocalAddress( netadr_t adr );
 
 typedef void (*NET_SendPacket_t)( netsrc_t sock, int length, const void *data, netadr_t to );
 extern NET_SendPacket_t NET_SendPacket;
 
-//void QDECL NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, ... );
-
 extern netadr_t authorizeAddress;
 extern netadr_t masterAddress;
 
-typedef enum {
+typedef enum
+{
 	CS_FREE,        // can be reused for a new connection
 	CS_ZOMBIE,      // client has been disconnected, but don't reuse connection for a couple seconds
 	CS_CONNECTED,   // has been assigned to a client_t, but no gamestate yet
@@ -248,12 +221,12 @@ typedef enum {
 	CS_ACTIVE       // client is fully in game
 } clientState_t;
 
-typedef struct { //usercmd_s i defined in server.h mmmmmmm
+typedef struct //usercmd_s defined in server.h
+{
 	playerState_t *ps;
 	usercmd_t cmd;
-	//other stuff
+	//some remaining
 } pmove_t;
-
 extern pmove_t *pm;
 
 #define iprintln(m) SV_SendServerCommand(NULL, 0, "e \"%s\"", m)
@@ -328,7 +301,8 @@ typedef struct client_s
 typedef void (*Netchan_Setup_t)( netsrc_t sock, netchan_t* chan, netadr_t adr, int qport );
 extern Netchan_Setup_t Netchan_Setup;
 
-typedef struct animation_s {
+typedef struct animation_s
+{
 	char name[64]; //pb_combatwalk_left_loop_pistol
 	int a; //4294967295
 	int b; //31
@@ -339,100 +313,17 @@ typedef struct animation_s {
 	int g; //0
 } animation_t;
 
-/*
-from 1.5
-
-typedef enum {
-  UCMD_BUTTONS = 8, //for messagemode/console, cl_run (+speed) (aim down the sight)
-  UCMD_WBUTTONS, //+reload, +leanright +leanleft
-  UCMD_FORWARDMOVE = 23,
-  UCMD_RIGHTMOVE,
-  UCMD_UPMOVE
-} usercmd_offset;
-
-
-typedef struct usercmd_s {
-	int serverTime;
-	byte buttons;
-	byte wbuttons;
-	byte weapon;
-	byte flags;
-    byte unknown1[13];
-    / *
-        forward = 127
-        back = 129
-        right = 127
-        left = 129
-        up = 127
-        prone = 129
-    * /
-	signed char forwardmove, rightmove, upmove;
-	byte doubleTap;             // Arnout: only 3 bits used
-
-	// rain - in ET, this can be any entity, and it's used as an array
-	// index, so make sure it's unsigned
-	byte identClient;           // NERVE - SMF
-} usercmd_t;
-*/
-
-typedef struct {
-	char mUID[33];
-	
-	long long chattimer;
-	long long commandtimer;
-	int uid;
-	bool pure;
-	int clientusage;
-	
-	qboolean namemuted; //can this player rename?
-	qboolean muted; //can this player chat?
-	
-	int perks[MAX_PERKS];
-	int sprinting;
-} xtnded_client, x_client;
-
-#define xclient_t x_client
-
-typedef struct {
-	/*extended info for the challenges */
-	#if 0 //kinda unneeded
-	netadr_t adr;
-	int challenge;
-	int time;
-	#endif
-	int guid;
-	char mUID[33];
-	int bCanConnect;
-	bool bAuthRequested;
-	time_t msgtime;
-} x_challenge;
-
-extern x_challenge x_challenges[MAX_CHALLENGES];
-extern xtnded_client xtnded_clients[64];
-
-
 #define clearchallenge(i) \
-memset( &challenges[i], 0, sizeof( challenges[i] ) ); \
-memset( &x_challenges[i], 0, sizeof( x_challenges[i] ) )
-
-#define x_clients xtnded_clients
-#define xclients x_clients
+memset(&challenges[i], 0, sizeof(challenges[i]))
 
 extern client_t** clients;
-
 extern cvar_t  *sv_maxclients;
-
 extern challenge_t* challenges;
-
-/*
-	x commands
-*/
 
 void Cmd_CallVote(unsigned);
 
 typedef void (__cdecl *SV_StopDownload_f_t)(client_t*);
 extern SV_StopDownload_f_t SV_StopDownload_f;
-
 typedef void (*SV_BeginDownload_f_t)(client_t*);
 extern SV_BeginDownload_f_t SV_BeginDownload_f;
 
@@ -448,13 +339,11 @@ extern SV_GetClientScore_t SV_GetClientScore;
 void SV_Status_f();
 void SV_UserinfoChanged( client_t* cl );
 
-#define SHOWMSG_MSEC 2050
-
 client_t* getclient(int);
-char	*ConcatArgs( int start );
-typedef void (*SV_Trace_t)( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+char *ConcatArgs( int start);
+typedef void (*SV_Trace_t)(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask);
 typedef void (QDECL *SV_SendServerCommand_t)(client_t*, int, const char*, ...); //actually is gamesendservercommand which then checks and then calls sendservercommand
-typedef void (*getuserinfo_t)( int index, char *buffer, int bufferSize );
+typedef void (*getuserinfo_t)( int index, char *buffer, int bufferSize);
 typedef void (*setuserinfo_t)(int,const char*);
 extern SV_Trace_t SV_Trace;
 extern SV_SendServerCommand_t SV_SendServerCommand;
@@ -473,7 +362,6 @@ struct leakyBucket_s
 	int lastTime;
 	signed char burst;
 	long hash;
-
 	leakyBucket_t *prev, *next;
 };
 #define MAX_BUCKETS 16384
@@ -485,5 +373,4 @@ static long SVC_HashForAddress(netadr_t address);
 static leakyBucket_t *SVC_BucketForAddress(netadr_t address, int burst, int period);
 bool SVC_RateLimit(leakyBucket_t *bucket, int burst, int period);
 bool SVC_RateLimitAddress(netadr_t from, int burst, int period);
-
 #endif // SERVER_H

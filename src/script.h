@@ -166,15 +166,13 @@ typedef struct {
 	short auto_change;
 	short manual_change;
 } scr_const_t;
-
-typedef struct {
+typedef struct
+{
 	short texturename;
 	short contents;
-	
 	//assumingly from perk > MAX_PERKS
 	short perks[MAX_PERKS];
 } xscr_const_t;
-
 extern xscr_const_t xscr_const;
 extern scr_const_t *scr_const;
 
@@ -206,7 +204,8 @@ typedef enum {
 
 typedef void (__cdecl *SCRIPTFUNCTIONCALL)(int);
 
-typedef struct {
+typedef struct
+{
 	const char* name;
 	SCRIPTFUNCTIONCALL call;
 	int developer;
@@ -215,7 +214,8 @@ typedef struct {
 typedef SCRIPTFUNCTIONCALL (*Scr_GetFunction_t)(const char**, int*);
 typedef SCRIPTFUNCTIONCALL (*Scr_GetMethod_t)(const char**, int*);
 
-typedef struct {
+typedef struct
+{
 	char *var;
 	int structure_offset; //Some offset in the state for getting generic fields.
 	int structure_offset_type; //script type e.g "string", "int"
@@ -226,7 +226,8 @@ typedef struct {
 	*/
 } scr_memberfield;
 
-typedef struct {
+typedef struct
+{
 	char *name;
 	int offset;
 	int type;
@@ -245,7 +246,6 @@ typedef struct {
 	
 	- Richard
 */
-
 extern Scr_GetFunction_t Scr_GetFunction;
 extern Scr_GetMethod_t Scr_GetMethod;
 
@@ -477,12 +477,6 @@ void PlayerCmd_kickbot(int);
 void PlayerCmd_renamebot(int);
 void PlayerCmd_isbot(int);
 void PlayerCmd_SendServerCommand(int);
-void PlayerCmd_SendGamestate(int);
-void PlayerCmd_ispure(int a1);
-void PlayerCmd_GetMUID(unsigned);
-void PlayerCmd_SetPerk(int);
-void PlayerCmd_UnsetPerk(int);
-void PlayerCmd_HasPerk(int);
 void PlayerCmd_SetMaxSpeed(int);
 void PlayerCmd_GetPing(int);
 void PlayerCmd_SetMoveSpeedScale(int);
@@ -493,6 +487,7 @@ ENTITY METHODS
 =============
 */
 
+void ScriptEnt_GetPosition(int);
 void ScriptEnt_SetBounds(int);
 void ScriptEnt_SetBoundCorners(int);
 void ScriptEnt_SetTakeDamage(int);
@@ -523,7 +518,6 @@ MYSQL FUNCTIONS
 */
 
 #ifdef uMYSQL
-
 void GScr_mysql_init(int);
 void GScr_mysql_close(int);
 void GScr_mysql_affected_rows(int);
@@ -538,7 +532,6 @@ void GScr_mysql_query(int);
 void GScr_mysql_real_connect(int);
 void GScr_mysql_real_escape_string(int);
 void GScr_mysql_store_result(int);
-
 #endif //uMYSQL
 
 #endif // SCRIPT_H
