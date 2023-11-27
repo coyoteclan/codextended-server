@@ -152,6 +152,23 @@ void PlayerCmd_GetVelocity(int self)
 	VectorCopy((float*)((int)e->client + POFF_VELOCITY), vec);
 	Scr_AddVector(vec);
 }
+void PlayerCmd_SetGravity(int self)
+{
+	gentity_t *e = &g_entities[self];
+	if (!e->client)
+	{
+		Scr_Error("entity is not a player");
+		return;
+	}
+
+	int gravity = Scr_GetInt(0);
+	if (gravity < 0)
+	{
+		Scr_Error("negative gravity");
+		return;
+	}
+	e->client->ps.gravity = gravity;
+}
 
 void PlayerCmd_GetInt(int self)
 {

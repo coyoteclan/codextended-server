@@ -82,7 +82,9 @@ void set_game_ptr( void *ret )
 	__jmp(cont, (int)G_SetPlayerContents);
 	int h66 = (int)dlsym(ret, "ClientEndFrame") + 0x173; //patch contents
 	__nop(h66, h66+0xa);
-	
+
+	//__nop(GAME("ClientEndFrame") + 0x234, 3); //mov g_gravity > ps->gravity
+
 	__call(GAME("ClientCommand")+0x62D, (int)Cmd_CallVote);
 	void ClientBegin(int);
 	__call(GAME("vmMain")+0xA0, (int)ClientBegin);

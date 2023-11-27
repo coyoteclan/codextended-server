@@ -29,9 +29,10 @@ void GScr_seconds(int a1)
 	Scr_AddInt(time(NULL));
 }
 
-void Math_Scr_sqrt(int a) {
+void Math_Scr_sqrt(int a)
+{
 	float f = Scr_GetFloat(0);
-	Scr_AddFloat( sqrt(f) );
+	Scr_AddFloat(sqrt(f));
 }
 
 void GScr_system(int a)
@@ -75,7 +76,7 @@ SCRIPTFUNCTION scriptFunctions[] =
 	
 	// Math
 	{"sqrt", Math_Scr_sqrt, 0},
-	
+
 	// String
 	{"strtok", Scr_StrTok, 0},
 	{"issubstr", Scr_IsSubStr, 0},
@@ -173,6 +174,7 @@ SCRIPTFUNCTION scriptMethods[] =
 	{"setmaxspeed", PlayerCmd_SetMaxSpeed, 0},
 	{"setmovespeedscale", PlayerCmd_SetMoveSpeedScale, 0},
 	{"freeze_controls", PlayerCmd_FreezeControls, 0},
+	{"setgravity", PlayerCmd_SetGravity, 0},
 	{NULL, NULL, 0}
 };
 

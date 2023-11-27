@@ -268,7 +268,7 @@ void SVC_Info(netadr_t* from)
 	else
 	    Info_SetValueForKey(infostring, "pswrd", "0");
 
-	Info_SetValueForKey(infostring, "codextended", va("%s", CODEXTENDED_VERSION));
+	Info_SetValueForKey(infostring, "codextended", va("v%s", CODEXTENDED_VERSION));
 	
 	NET_OutOfBandPrint( NS_SERVER, *from, "infoResponse\n%s", infostring );
 }

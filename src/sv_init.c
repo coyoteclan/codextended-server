@@ -96,7 +96,8 @@ void SV_Init( void )
 	x_authorize = Cvar_Get("x_authorize", "0", 0);
 	//Used to prevent players from blocking each other
 	x_contents = Cvar_Get("x_contents", "-1", 0);
-	Cvar_Get("codextended", va("CoDExtended %s", CODEXTENDED_VERSION), CVAR_SERVERINFO | CVAR_ROM | CVAR_NORESTART);
+	Cvar_Get("codextended", va("CoDExtended v%s", CODEXTENDED_VERSION), CVAR_SERVERINFO | CVAR_ROM | CVAR_NORESTART);
+	
 	sv_master[0] = Cvar_Get("sv_master1", "codmaster.activision.com", 0);
 	sv_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);
 	sv_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);

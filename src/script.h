@@ -394,7 +394,6 @@ void Scr_convertToIString(int a1);
 MATH
 =============
 */
-
 void MScr_cos(int);
 void MScr_sin(int);
 void MScr_sqrt(int);
@@ -441,13 +440,12 @@ void GScr_mysql_real_escape_string(int);
 void GScr_mysql_store_result(int);
 void GScr_mysql_get_connection(int);
 #endif
+
 /*
 =============
 PLAYER METHODS
 =============
 */
-
-void PlayerCmd_useButtonPressedX(int);
 void PlayerCmd_SetVelocity(int);
 void PlayerCmd_GetVelocity(int);
 void PlayerCmd_getPlayerAngles(int);
@@ -481,12 +479,13 @@ void PlayerCmd_SetMaxSpeed(int);
 void PlayerCmd_GetPing(int);
 void PlayerCmd_SetMoveSpeedScale(int);
 void PlayerCmd_FreezeControls(int);
+void PlayerCmd_SetGravity(int);
+
 /*
 =============
 ENTITY METHODS
 =============
 */
-
 void ScriptEnt_GetPosition(int);
 void ScriptEnt_SetBounds(int);
 void ScriptEnt_SetBoundCorners(int);
@@ -503,7 +502,6 @@ void Ent_ShowToPlayer(unsigned num);
 FILE FUNCTIONS
 =============
 */
-
 void GScr_fopen(int);
 void GScr_fclose(int);
 void GScr_fread(int);
@@ -516,7 +514,6 @@ void GScr_fwrite(int);
 MYSQL FUNCTIONS
 =============
 */
-
 #ifdef uMYSQL
 void GScr_mysql_init(int);
 void GScr_mysql_close(int);

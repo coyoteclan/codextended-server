@@ -635,7 +635,16 @@ typedef struct playerState_s
   int pm_time;
   vec3_t origin;
   vec3_t velocity;
-  char gap_2C[20];
+
+  //char gap_2C[20];
+  vec2_t oldVelocity;
+	int weaponTime;
+	int weaponDelay;
+	int grenadeTimeLeft;
+	int weaponRestrictKickTime;
+	int foliageSoundTime;
+	int gravity;
+
   float leanf;
   int speed;
   char gap_48[12];
@@ -1115,11 +1124,6 @@ static void __attribute__((visibility ("hidden"))) *xalloc(size_t size) {
 	return p;
 }
 
-void myClientCommand();
-void myClientEndFrame(int*);
-void myClientUserinfoChanged( int clientNum );
-char* myClientConnect(int, int);
-void myClientDisconnect(int);
 /*
 ================
 CMD
@@ -1128,7 +1132,6 @@ CMD
 
 DEFINE_F(void, Com_Printf, const char*, ...);
 
-//typedef void (QDECL *Com_Printf_t)(const char*, ...);
 typedef void (QDECL *Com_DPrintf_t)(const char*, ...);
 #define Com_DPrintf _PREFX
 extern Com_DPrintf_t Com_DPrintf;
