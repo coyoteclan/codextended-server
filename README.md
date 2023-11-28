@@ -4,7 +4,7 @@ ___
 # Server extension for Call of Duty (2003)
 It works for the multiplayer patch 1.1  
 You can get info for this game at [cod.pm](https://cod.pm/)
-___
+
 ### This adds improvements, such as:
 #### Security
 
