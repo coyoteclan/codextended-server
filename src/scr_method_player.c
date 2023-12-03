@@ -167,7 +167,9 @@ void PlayerCmd_SetGravity(int self)
 		Scr_Error("negative gravity");
 		return;
 	}
-	e->client->ps.gravity = gravity;
+	extern int player_g_gravity[MAX_CLIENTS];
+	int num = e->s.number;
+	player_g_gravity[num] = gravity;
 }
 
 void PlayerCmd_GetInt(int self)

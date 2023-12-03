@@ -19,7 +19,6 @@
 	Call of Duty Extended
 		by riicchhaarrd
 	http://github.com/riicchhaarrd/CoDExtended
-	http://cod1.eu/
 */
 #include <sys/socket.h>
 #include <arpa/inet.h>

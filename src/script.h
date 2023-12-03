@@ -495,6 +495,7 @@ void ScriptEnt_SetMaxs(int);
 void ScriptEnt_SetMins(int);
 void ScriptEnt_SetAbsMin(int);
 void ScriptEnt_SetLight(int);
+void ScriptEnt_SetAnim(int);
 void Ent_ShowToPlayer(unsigned num);
 
 /*

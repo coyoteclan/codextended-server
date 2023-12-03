@@ -65,6 +65,22 @@ void ScriptEnt_SetLight(int ent)
 	i = Scr_GetInt(3);
 	e->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 }
+
+
+void ScriptEnt_SetAnim(int entityNum)
+{
+	#if 0
+	gentity_t *entity = &g_entities[entityNum];
+	char* animation = Scr_GetString(0);
+	int animationIndex = oBG_AnimationIndexForString(animation);
+	cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### ScriptEnt_SetAnim: animationIndex = %i \n", animationIndex);
+	gclient_t *gclient = entity->client;
+	*(int*)((int)gclient + 980) = animationIndex;
+	#endif
+}
+
+
+
 void ScriptEnt_SetBounds(int entityNum)
 {
     float width = Scr_GetFloat(0);

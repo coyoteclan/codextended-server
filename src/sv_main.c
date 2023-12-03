@@ -486,10 +486,13 @@ void SV_ConnectionlessPacket(netadr_t from, msg_t *msg)
 	}
 	else if (!Q_stricmp(c, "ipAuthorize"))
 	{
+		//TODO: by default don't allow cd keys already in use
+		#if 0
 		if (!x_authorize->integer)
 		{
 			((void(*)(netadr_t))0x808514c)(from); //SV_AuthorizeIpPacket
 		}
+		#endif
 	}
 	else if (!Q_stricmp(c, "rcon"))
 	{

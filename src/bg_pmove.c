@@ -17,6 +17,8 @@
 
 #include "server.h"
 
+#include "cracking.h"
+
 pmove_t *pm;
 
 //Slide off of the impacting surface
@@ -180,6 +182,24 @@ void _PM_FinishWeaponChange()
 	PM_FinishWeaponChange();
 }
 
+int player_g_gravity[MAX_CLIENTS] = {0};
+cHook *hook_play_endframe;
+int play_endframe(gentity_t *ent)
+{
+	cHook_unhook(hook_play_endframe);
+	int (*sig)(gentity_t *ent);
+	*(int *)&sig = hook_play_endframe->from;
+	int ret = sig(ent);
+	cHook_hook(hook_play_endframe);
+	//TODO: check STATE_PLAYING
+	int num = ent->s.number;
+	if (player_g_gravity[num] > 0)
+	{
+		ent->client->ps.gravity = player_g_gravity[num];
+	}
+	return ret;
+}
+
 void BG_Link()
 {
 	__call(GAME("PM_Weapon") + 0x121, (int)_PM_CheckForChangeWeapon);
@@ -206,4 +226,8 @@ void BG_Link()
 	//__jmp( GAME("PM_ClearAimDownSightFlag"), _PM_ClearAimDownSightFlag);
 	__call( thk + 0xFD, _PM_ClearAimDownSightFlag);
 	__call( GAME("vmMain") - 0x1F119, _PM_ClearAimDownSightFlag);
+
+	hook_play_endframe = (cHook *)malloc(sizeof(cHook));
+	cHook_init(hook_play_endframe, GAME("ClientEndFrame"), (int)play_endframe);
+	cHook_hook(hook_play_endframe);
 }

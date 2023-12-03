@@ -636,14 +636,13 @@ typedef struct playerState_s
   vec3_t origin;
   vec3_t velocity;
 
-  //char gap_2C[20];
+
+  //char gap_2C[20]; //TODO: check why was [20] but added less bytes
   vec2_t oldVelocity;
-	int weaponTime;
+	int	weaponTime;
 	int weaponDelay;
-	int grenadeTimeLeft;
-	int weaponRestrictKickTime;
-	int foliageSoundTime;
-	int gravity;
+	int	gravity;
+
 
   float leanf;
   int speed;
