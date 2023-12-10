@@ -268,12 +268,10 @@ void SVC_Info(netadr_t* from)
 	else
 	    Info_SetValueForKey(infostring, "pswrd", "0");
 
-	Info_SetValueForKey(infostring, "codextended", va("v%s", CODEXTENDED_VERSION));
+	Info_SetValueForKey(infostring, "codextended", va("%s", CODEXTENDED_VERSION));
 	
 	NET_OutOfBandPrint( NS_SERVER, *from, "infoResponse\n%s", infostring );
 }
-
-//extern challenge_t *challenges;
 
 void SVC_Status(netadr_t* from)
 {
@@ -293,17 +291,16 @@ void SVC_Status(netadr_t* from)
 	char player[1024];
 	char status[MAX_MSGLEN];
 	int i;
-	client_t *cl;
-	int/*playerState_t*/ *ps;
+	client_t* cl;
+	int* ps;
 	int statusLength;
 	int playerLength;
 	char infostring[MAX_INFO_STRING];
-	int custom_mod = 0;
-	char *fs_game = Cvar_VariableString("fs_game");
-	
-	if (fs_game && *fs_game)
-		custom_mod = 1;
-	
+
+	char *gamedir = Cvar_VariableString("fs_game");
+	if (*gamedir)
+		Info_SetValueForKey(infostring, "game", gamedir);
+
 	challenge_t* challenge;
 	
 	if (!SV_VerifyChallenge(Cmd_Argv(1)))
@@ -327,7 +324,7 @@ void SVC_Status(netadr_t* from)
 			playerLength = strlen(player);
 			if (statusLength + playerLength >= sizeof(status))
 			{
-				break; // can't hold any more
+				break; //can't hold any more
 			}
 			strcpy(status + statusLength, player);
 			statusLength += playerLength;
@@ -341,8 +338,11 @@ void SVC_Status(netadr_t* from)
 	
 	char *g_password = Cvar_VariableString("g_password");
 	Info_SetValueForKey(infostring, "pswrd", va("%i", (g_password && *g_password) ? 1 : 0));
-	Info_SetValueForKey(infostring, "mod", va("%i", custom_mod));
-	
+
+	char *fs_game = Cvar_VariableString("fs_game");
+	if (fs_game && *fs_game)
+		Info_SetValueForKey(infostring, "mod", va("%s", fs_game));
+
 	NET_OutOfBandPrint( NS_SERVER, *from, "statusResponse\n%s\n%s", infostring, status );
 }
 
