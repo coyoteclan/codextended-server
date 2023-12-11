@@ -182,6 +182,7 @@ void _PM_FinishWeaponChange()
 	PM_FinishWeaponChange();
 }
 
+int player_g_speed[MAX_CLIENTS] = {0};
 int player_g_gravity[MAX_CLIENTS] = {0};
 cHook *hook_play_endframe;
 int play_endframe(gentity_t *ent)
@@ -191,12 +192,18 @@ int play_endframe(gentity_t *ent)
 	*(int *)&sig = hook_play_endframe->from;
 	int ret = sig(ent);
 	cHook_hook(hook_play_endframe);
+	
 	//TODO: check STATE_PLAYING
 	int num = ent->s.number;
+	if (player_g_speed[num] > 0)
+	{
+		ent->client->ps.speed = player_g_speed[num];
+	}
 	if (player_g_gravity[num] > 0)
 	{
 		ent->client->ps.gravity = player_g_gravity[num];
 	}
+
 	return ret;
 }
 

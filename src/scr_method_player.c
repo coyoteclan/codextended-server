@@ -171,6 +171,25 @@ void PlayerCmd_SetGravity(int self)
 	int num = e->s.number;
 	player_g_gravity[num] = gravity;
 }
+void PlayerCmd_SetSpeed(int self)
+{
+	gentity_t *e = &g_entities[self];
+	if (!e->client)
+	{
+		Scr_Error("entity is not a player");
+		return;
+	}
+
+	int speed = Scr_GetInt(0);
+	if (speed < 0)
+	{
+		Scr_Error("negative speed");
+		return;
+	}
+	extern int player_g_speed[MAX_CLIENTS];
+	int num = e->s.number;
+	player_g_speed[num] = speed;
+}
 
 void PlayerCmd_GetInt(int self)
 {

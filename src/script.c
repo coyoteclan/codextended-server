@@ -176,6 +176,7 @@ SCRIPTFUNCTION scriptMethods[] =
 	{"setmovespeedscale", PlayerCmd_SetMoveSpeedScale, 0},
 	{"freeze_controls", PlayerCmd_FreezeControls, 0},
 	{"setgravity", PlayerCmd_SetGravity, 0},
+	{"setspeed", PlayerCmd_SetSpeed, 0},
 	{NULL, NULL, 0}
 };
 

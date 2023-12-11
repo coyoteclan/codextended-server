@@ -267,6 +267,7 @@ extern x##_t x
 #define _Q_fabs xtn__Q_fabs
 #define PlayerCmd_SetVelocity xtn_PlayerCmd_SetVelocity
 #define PlayerCmd_SetGravity xtn_PlayerCmd_SetGravity
+#define PlayerCmd_SetSpeed xtn_PlayerCmd_SetSpeed
 #define x_spectator_noclip xtn_x_spectator_noclip
 #define Cvar_VariableValue xtn_Cvar_VariableValue
 #define PlayerCmd_getip xtn_PlayerCmd_getip

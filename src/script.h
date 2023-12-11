@@ -480,6 +480,7 @@ void PlayerCmd_GetPing(int);
 void PlayerCmd_SetMoveSpeedScale(int);
 void PlayerCmd_FreezeControls(int);
 void PlayerCmd_SetGravity(int);
+void PlayerCmd_SetSpeed(int);
 
 /*
 =============
