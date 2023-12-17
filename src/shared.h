@@ -571,12 +571,13 @@ typedef enum {
 
 #endif
 
-typedef enum {
+typedef enum
+{
 	POFF_CLIENTNUM = 172,
 	POFF_EFLAGS = 128,
 	POFF_PM_TYPE = 4,
-    POFF_VELOCITY = 0x20,
-    POFF_ANGLES = 0xC0,
+  POFF_VELOCITY = 0x20,
+  POFF_ANGLES = 0xC0,
 	POFF_SESSIONSTATE = 8400
 } PLAYER_OFFSET;
 
@@ -692,24 +693,72 @@ typedef struct playerState_s
 } playerState_t;
 #pragma pack(pop)
 
-typedef struct usercmd_s {
-	int serverTime;
-	byte buttons; //console,chat talking, aim down the sight, attackbutton, usebutton
-	byte wbuttons; //lean right,left,reload
-	byte weapon;
-	byte flags;
-	int angles[3];
-
-	signed char forwardmove, rightmove, upmove;
-	byte unknown; //could be doubleTap or client
+typedef struct usercmd_s
+{
+  int serverTime;
+  byte buttons; //console,chat talking, aim down the sight, attackbutton, usebutton
+  byte wbuttons; //lean right,left,reload
+  byte weapon;
+  byte flags;
+  int angles[3];
+  signed char forwardmove, rightmove, upmove;
+  byte unknown; //could be doubleTap or client
 } usercmd_t;
+
+//FROM COD2REV
+typedef enum
+{
+	SESS_STATE_PLAYING,
+	SESS_STATE_DEAD,
+	SESS_STATE_SPECTATOR,
+	SESS_STATE_INTERMISSION,
+} sessionState_t;
+typedef struct
+{
+	int clientIndex;
+	int team;
+	int modelindex;
+	int attachModelIndex[6];
+	int attachTagIndex[6];
+	char name[32];
+} clientState_t;
+typedef struct
+{
+	sessionState_t sessionState;
+	int forceSpectatorClient;
+	int statusIcon;
+	int archiveTime;
+	int score;
+	int deaths;
+	uint16_t pers;
+	int connected;
+	usercmd_t cmd;
+	usercmd_t oldcmd;
+	int localClient;
+	int predictItemPickup;
+	char name[32];
+	int maxHealth;
+	int enterTime;
+	int voteCount;
+	int teamVoteCount;
+	float moveSpeedScaleMultiplier;
+	int viewmodelIndex;
+	int noSpectate;
+	int teamInfo;
+	clientState_t state;
+	int psOffsetTime;
+} clientSession_t;
+//FROM COD2REV END
 
 #pragma pack(push, 1)
 struct gclient_s
 {
   playerState_t ps;
+
   int ab;
-  int cb;
+  //int cb;
+  clientSession_t sess; //FROM COD2REV
+
   int spectatorClient;
   int idklell;
   int archivetime;

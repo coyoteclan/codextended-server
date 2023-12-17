@@ -212,6 +212,15 @@ extern NET_SendPacket_t NET_SendPacket;
 extern netadr_t authorizeAddress;
 extern netadr_t masterAddress;
 
+enum
+{
+	CS_FREE,
+	CS_ZOMBIE,
+	CS_CONNECTED,
+	CS_PRIMED,
+	CS_ACTIVE
+};
+/*
 typedef enum
 {
 	CS_FREE,        // can be reused for a new connection
@@ -219,7 +228,7 @@ typedef enum
 	CS_CONNECTED,   // has been assigned to a client_t, but no gamestate yet
 	CS_PRIMED,      // gamestate has been sent, but client hasn't sent a usercmd
 	CS_ACTIVE       // client is fully in game
-} clientState_t;
+} clientState_t;*/
 
 typedef struct //usercmd_s defined in server.h
 {

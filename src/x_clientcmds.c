@@ -39,9 +39,10 @@ void Cmd_CallVote(unsigned gentity)
 	#endif
 }
 
-
 void G_SayTo(int *ent, int *other, int mode, int color, const char *name, const char *message)
 {
+	cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### G_SayTo \n");
+
 	cvar_t* x_deadchat = Cvar_Get("x_deadchat", "1", 0);
 	
 	if (!call_onsameteam)

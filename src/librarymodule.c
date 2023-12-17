@@ -83,8 +83,6 @@ void set_game_ptr( void *ret )
 	int h66 = (int)dlsym(ret, "ClientEndFrame") + 0x173; //patch contents
 	__nop(h66, h66+0xa);
 
-	//__nop(GAME("ClientEndFrame") + 0x234, 3); //mov g_gravity > ps->gravity
-
 	__call(GAME("ClientCommand")+0x62D, (int)Cmd_CallVote);
 	void ClientBegin(int);
 	__call(GAME("vmMain")+0xA0, (int)ClientBegin);
@@ -124,7 +122,7 @@ void set_game_ptr( void *ret )
 	/*
 		end of fix
 	*/
-	
+
 	x_deadchat = Cvar_Get("x_deadchat", "1", 0);
 	//deadchat fix
 	int b2 = GAME("G_SayTo")+0x70;
@@ -135,7 +133,7 @@ void set_game_ptr( void *ret )
 	*(byte*)b3 = 0xeb;
 	*(byte*)b4 = 0xeb;
 	//end deadchat fix
-	
+
 	//Spectator noclip
 	if (x_spectator_noclip->integer)
 	{

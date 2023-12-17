@@ -915,40 +915,64 @@ void SV_UserinfoChanged( client_t* cl ) {
 	}
 }
 
-void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *msg) {
-	int result ;
-			
-	void (*G_Say)( gentity_t *ent, gentity_t *target, int mode, const char *chatText );
+#define PM_SPECTATOR 2
+#define PM_DEAD 3
+void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *msg)
+{
+	void (*G_Say)(gentity_t *ent, gentity_t *target, int mode, const char *chatText);
 	*(int*)&G_Say = GAME("G_Say");
 
 	char line[1024] = {0};
-	int i,j;
-	
+	int i, j;
 	j = 0;
+	int result;
 	
-	for(i = 0; i < strlen(msg); i++) {
+	for(i = 0; i < strlen(msg); i++)
+	{
 		if(i >= 1023)
 			break;
 		if(msg[i] < 32 || msg[i] > 126)
 			continue;
 		line[j++] = msg[i];
 	}
-	
-	if(callbackPlayerCommand) {
+	if(callbackPlayerCommand)
+	{
 		Scr_AddString(line);
 		result = Scr_ExecEntThread(ent->s.number, 0, callbackPlayerCommand, 1);
 		Scr_FreeThread(result);
 	}
-	
 	if(!Scr_Continue())
 		return;
-		
+
+	qboolean (*OnSameTeam)(gentity_t*, gentity_t*);
+	*(int*)&OnSameTeam = GAME("OnSameTeam");
+
 	int tmp = *(int*)( (int)ent->client + 8400);
-	
 	if(tmp && !x_deadchat->integer)
-		return;
-	
-	G_Say(ent, NULL, mode, line);
+	{
+		//Message sender is not alive
+		for (i = 0; i < sv_maxclients->integer; i++)
+		{
+			gentity_t *entInLoop = &g_entities[i];
+			//Allow non-living players to talk only if in same team
+			if (OnSameTeam(ent, entInLoop))
+			{
+				if (((ent->client->sess.sessionState == SESS_STATE_DEAD && entInLoop->client->sess.sessionState == SESS_STATE_DEAD) //BOTH DEAD
+					|| (ent->client->sess.sessionState == SESS_STATE_SPECTATOR && entInLoop->client->sess.sessionState == SESS_STATE_SPECTATOR)) //BOTH SPECTATORS
+					||
+					((ent->client->sess.sessionState == SESS_STATE_DEAD && entInLoop->client->sess.sessionState == SESS_STATE_SPECTATOR) //SENDER=DEAD
+					|| (ent->client->sess.sessionState == SESS_STATE_SPECTATOR && entInLoop->client->sess.sessionState == SESS_STATE_DEAD))) //SENDER=SPECTATOR
+				{
+					//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ALLOW COMMUNICATION \n");
+					G_Say(ent, entInLoop, mode, line);
+				}
+			}
+		}
+	}
+	else
+	{
+		G_Say(ent, NULL, mode, line);
+	}
 }
 
 extern int callbackPlayerCommand;
