@@ -915,8 +915,6 @@ void SV_UserinfoChanged( client_t* cl ) {
 	}
 }
 
-#define PM_SPECTATOR 2
-#define PM_DEAD 3
 void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *msg)
 {
 	void (*G_Say)(gentity_t *ent, gentity_t *target, int mode, const char *chatText);
@@ -944,47 +942,21 @@ void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *msg)
 	if(!Scr_Continue())
 		return;
 
-	//qboolean (*OnSameTeam)(gentity_t*, gentity_t*);
-	//*(int*)&OnSameTeam = GAME("OnSameTeam");
-
 	int tmp = *(int*)( (int)ent->client + 8400);
 	if(tmp && !x_deadchat->integer)
 	{
-		//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### x_deadchat \n");
-		//Message sender is not alive
-
 		for (i = 0; i < sv_maxclients->integer; i++)
 		{
 			gentity_t *entInLoop = &g_entities[i];
-			//Allow non-living players to talk only if in same team
-
-			if(ent->client->sess.sessionState == SESS_STATE_SPECTATOR && entInLoop->client->sess.sessionState == SESS_STATE_SPECTATOR) //BOTH DEAD
+			if(entInLoop->client->sess.sessionState != SESS_STATE_PLAYING)
 			{
 				//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ALLOW COMMUNICATION \n");
 				G_Say(ent, entInLoop, mode, line);
 			}
-			/*
-			if (OnSameTeam(ent, entInLoop))
-			{
-				cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### OnSameTeam \n");
-
-				if (((ent->client->sess.sessionState == SESS_STATE_DEAD && entInLoop->client->sess.sessionState == SESS_STATE_DEAD) //BOTH DEAD
-					|| (ent->client->sess.sessionState == SESS_STATE_SPECTATOR && entInLoop->client->sess.sessionState == SESS_STATE_SPECTATOR)) //BOTH SPECTATORS
-					||
-					((ent->client->sess.sessionState == SESS_STATE_DEAD && entInLoop->client->sess.sessionState == SESS_STATE_SPECTATOR) //SENDER=DEAD
-					|| (ent->client->sess.sessionState == SESS_STATE_SPECTATOR && entInLoop->client->sess.sessionState == SESS_STATE_DEAD))) //SENDER=SPECTATOR
-				{
-					cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ALLOW COMMUNICATION \n");
-					G_Say(ent, entInLoop, mode, line);
-				}
-			}*/
-
-
 		}
 	}
 	else
 	{
-		//cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### NO x_deadchat \n");
 		G_Say(ent, NULL, mode, line);
 	}
 }
