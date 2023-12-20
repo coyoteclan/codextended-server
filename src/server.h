@@ -1,5 +1,5 @@
 /*
-	This file is part of CoDExtended.
+    This file is part of CoDExtended.
 
     CoDExtended is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,84 +49,84 @@
 
 typedef enum
 {
-	svc_bad,
-	svc_nop,
-	svc_gamestate,
-	svc_configstring,		// [short] [string] only in gamestate messages
-	svc_baseline,			// only in gamestate messages
-	svc_serverCommand,		// [string] to be executed by client game module
-	svc_download,			// [short] size [size bytes]
-	svc_snapshot,
-	svc_EOF
+    svc_bad,
+    svc_nop,
+    svc_gamestate,
+    svc_configstring,		// [short] [string] only in gamestate messages
+    svc_baseline,			// only in gamestate messages
+    svc_serverCommand,		// [string] to be executed by client game module
+    svc_download,			// [short] size [size bytes]
+    svc_snapshot,
+    svc_EOF
 } svc_ops_e; //it's for client aswell
 static char *svc_strings[256] =
 {
-	"svc_bad",
-	"svc_nop",
-	"svc_gamestate",
-	"svc_configstring",
-	"svc_baseline",
-	"svc_serverCommand",
-	"svc_download",
-	"svc_snapshot",
-	"svc_EOF"
+    "svc_bad",
+    "svc_nop",
+    "svc_gamestate",
+    "svc_configstring",
+    "svc_baseline",
+    "svc_serverCommand",
+    "svc_download",
+    "svc_snapshot",
+    "svc_EOF"
 };
 
 typedef enum
 {
-	NA_BOT,
-	NA_BAD, // an address lookup failed
-	NA_LOOPBACK,
-	NA_BROADCAST,
-	NA_IP,
-	NA_IPX,
-	NA_BROADCAST_IPX
+    NA_BOT,
+    NA_BAD, // an address lookup failed
+    NA_LOOPBACK,
+    NA_BROADCAST,
+    NA_IP,
+    NA_IPX,
+    NA_BROADCAST_IPX
 } netadrtype_t;
 typedef enum
 {
-	NS_CLIENT,
-	NS_SERVER
+    NS_CLIENT,
+    NS_SERVER
 } netsrc_t;
 typedef struct
 {
-	netadrtype_t type;
-	union
-	{
-		byte ip[4];
-		unsigned int _ip;
-	};
-	byte ipx[10];
-	unsigned short port;
+    netadrtype_t type;
+    union
+    {
+        byte ip[4];
+        unsigned int _ip;
+    };
+    byte ipx[10];
+    unsigned short port;
 } netadr_t; //size = 0x14 (20)
 
 #define MAX_CHALLENGES 1024
 typedef struct
 {
-	netadr_t adr; //0
-	int challenge; //20
-	int time; //24
-	int pingTime; //28
-	int firstTime; //32
-	int firstPing; //36
-	int connected; //40
-	#if CODPATCH == 5
-	int guid; //44
-	unsigned char __idk[36];
-	#endif
+    netadr_t adr; //0
+    int challenge; //20
+    int time; //24
+    int pingTime; //28
+    int firstTime; //32
+    int firstPing; //36
+    int connected; //40
+    #if CODPATCH == 5
+    int guid; //44
+    unsigned char __idk[36];
+    #endif
 } challenge_t;
 
 typedef struct
 {
-	int idk33[4];
-	int svFlags;
-	int singleClient;
-	char pad[256];
-	int idk;
+    int idk33[4];
+    int svFlags;
+    int singleClient;
+    char pad[256];
+    int idk;
 } entityShared_t;
 typedef struct
 {
-	entityState_t s;
-	entityShared_t r;
+    entityState_t s;
+    entityShared_t r;
 } sharedEntity_t;
 
 typedef sharedEntity_t* (*SV_GentityNum_t)( int num );
@@ -214,27 +214,27 @@ extern netadr_t masterAddress;
 
 enum
 {
-	CS_FREE,
-	CS_ZOMBIE,
-	CS_CONNECTED,
-	CS_PRIMED,
-	CS_ACTIVE
+    CS_FREE,
+    CS_ZOMBIE,
+    CS_CONNECTED,
+    CS_PRIMED,
+    CS_ACTIVE
 };
 /*
 typedef enum
 {
-	CS_FREE,        // can be reused for a new connection
-	CS_ZOMBIE,      // client has been disconnected, but don't reuse connection for a couple seconds
-	CS_CONNECTED,   // has been assigned to a client_t, but no gamestate yet
-	CS_PRIMED,      // gamestate has been sent, but client hasn't sent a usercmd
-	CS_ACTIVE       // client is fully in game
+    CS_FREE,        // can be reused for a new connection
+    CS_ZOMBIE,      // client has been disconnected, but don't reuse connection for a couple seconds
+    CS_CONNECTED,   // has been assigned to a client_t, but no gamestate yet
+    CS_PRIMED,      // gamestate has been sent, but client hasn't sent a usercmd
+    CS_ACTIVE       // client is fully in game
 } clientState_t;*/
 
 typedef struct //usercmd_s defined in server.h
 {
-	playerState_t *ps;
-	usercmd_t cmd;
-	//some remaining
+    playerState_t *ps;
+    usercmd_t cmd;
+    //some remaining
 } pmove_t;
 extern pmove_t *pm;
 
@@ -244,67 +244,67 @@ extern pmove_t *pm;
 #define MAX_MSGLEN 0x4000
 typedef struct
 {
-	char command[MAX_STRING_CHARS];
-	int cmdTime;
-	int cmdType;
+    char command[MAX_STRING_CHARS];
+    int cmdTime;
+    int cmdType;
 } reliableCommands_t; //FROM COD2REV
 typedef struct
 {
-	netsrc_t	sock;
-	int			dropped;			// between last packet and previous
-	netadr_t	remoteAddress;
-	int			qport;				// qport value to write when transmitting
-	// sequencing variables
-	int			incomingSequence;
-	int			outgoingSequence;
-	// incoming fragment assembly buffer
-	int			fragmentSequence;
-	int			fragmentLength;	
-	byte		fragmentBuffer[MAX_MSGLEN];
-	// outgoing fragment buffer
-	// we need to space out the sending of large fragmented messages
-	qboolean	unsentFragments;
-	int			unsentFragmentStart;
-	int			unsentLength;
-	byte		unsentBuffer[MAX_MSGLEN];
+    netsrc_t	sock;
+    int			dropped;			// between last packet and previous
+    netadr_t	remoteAddress;
+    int			qport;				// qport value to write when transmitting
+    // sequencing variables
+    int			incomingSequence;
+    int			outgoingSequence;
+    // incoming fragment assembly buffer
+    int			fragmentSequence;
+    int			fragmentLength;	
+    byte		fragmentBuffer[MAX_MSGLEN];
+    // outgoing fragment buffer
+    // we need to space out the sending of large fragmented messages
+    qboolean	unsentFragments;
+    int			unsentFragmentStart;
+    int			unsentLength;
+    byte		unsentBuffer[MAX_MSGLEN];
 } netchan_t; //FROM ID TECH3 GITHUB SOURCE
 
 #define	MAX_RELIABLE_COMMANDS 64
 typedef struct client_s
 {
-	int state;
-	int unknown4;
-	int unknown8;
-	char userinfo[1024];
-	reliableCommands_t	reliableCommands[MAX_RELIABLE_COMMANDS];
-	int reliableSequence;
-	int reliableAcknowledge;
-	char gap_10614;
-	char gap_10615[7];
-	int gamestateMessageNum;
-	int challenge;
-	usercmd_t lastUsercmd;
-	int lastClientCommand;
-	char lastClientCommandString[1024];
-	unsigned int gentity;
-	char name[32];
-	char downloadName[64];
-	int download;
-	int downloadSize;
-	int downloadCount;
-	int junk;
-	int gap_10AB4;
-	char gap_10AB8[84];
-	int lastPacketTime;
-	int lastConnectTime;
-	int nextSnapshotTime;
-	char gap_10B18[269704];
-	int ping;
-	int rate;
-	int snapshotMsec;
-	int pureAuthentic;
-	netchan_t netchan;
-	char unknown_rest[16];
+    int state;
+    int unknown4;
+    int unknown8;
+    char userinfo[1024];
+    reliableCommands_t	reliableCommands[MAX_RELIABLE_COMMANDS];
+    int reliableSequence;
+    int reliableAcknowledge;
+    char gap_10614;
+    char gap_10615[7];
+    int gamestateMessageNum;
+    int challenge;
+    usercmd_t lastUsercmd;
+    int lastClientCommand;
+    char lastClientCommandString[1024];
+    unsigned int gentity;
+    char name[32];
+    char downloadName[64];
+    int download;
+    int downloadSize;
+    int downloadCount;
+    int junk;
+    int gap_10AB4;
+    char gap_10AB8[84];
+    int lastPacketTime;
+    int lastConnectTime;
+    int nextSnapshotTime;
+    char gap_10B18[269704];
+    int ping;
+    int rate;
+    int snapshotMsec;
+    int pureAuthentic;
+    netchan_t netchan;
+    char unknown_rest[16];
 } client_t;
 
 typedef void (*Netchan_Setup_t)( netsrc_t sock, netchan_t* chan, netadr_t adr, int qport );
@@ -312,14 +312,14 @@ extern Netchan_Setup_t Netchan_Setup;
 
 typedef struct animation_s
 {
-	char name[64]; //pb_combatwalk_left_loop_pistol
-	int a; //4294967295
-	int b; //31
-	int c; //733
-	int d; //426038
-	int e; //144
-	int f; //16
-	int g; //0
+    char name[64]; //pb_combatwalk_left_loop_pistol
+    int a; //4294967295
+    int b; //31
+    int c; //733
+    int d; //426038
+    int e; //144
+    int f; //16
+    int g; //0
 } animation_t;
 
 #define clearchallenge(i) \
@@ -366,12 +366,12 @@ int Sys_Milliseconds(void);
 typedef struct leakyBucket_s leakyBucket_t;
 struct leakyBucket_s
 {
-	netadrtype_t type;
-	unsigned char _4[4];
-	int lastTime;
-	signed char burst;
-	long hash;
-	leakyBucket_t *prev, *next;
+    netadrtype_t type;
+    unsigned char _4[4];
+    int lastTime;
+    signed char burst;
+    long hash;
+    leakyBucket_t *prev, *next;
 };
 #define MAX_BUCKETS 16384
 #define MAX_HASHES 1024

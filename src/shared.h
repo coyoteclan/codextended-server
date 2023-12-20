@@ -1,5 +1,5 @@
 /*
-	This file is part of CoDExtended.
+  This file is part of CoDExtended.
 
     CoDExtended is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ unsigned _ColorBytes3( float r, float g, float b );
 unsigned _ColorBytes4( float r, float g, float b, float a );
 float _NormalizeColor( const vec3_t in, vec3_t out );
 void _RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point,
-							  float degrees );
+                float degrees );
 void _RotateAroundDirection( vec3_t axis[3], float yaw );
 void _vectoangles( const vec3_t value1, vec3_t angles );
 void _AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
@@ -179,13 +179,13 @@ float _vectoyaw( const vec3_t vec );
 float _VectorDistance( vec3_t v1, vec3_t v2 );
 
 typedef enum {
-	ERR_FATAL,                  // exit the entire game with a popup window
-	ERR_VID_FATAL,              // exit the entire game with a popup window and doesn't delete profile.pid
-	ERR_DROP,                   // print to console and disconnect from game
-	ERR_SERVERDISCONNECT,       // don't kill server
-	ERR_DISCONNECT,             // client disconnected from the server
-	ERR_NEED_CD,                // pop up the need-cd dialog
-	ERR_AUTOUPDATE
+  ERR_FATAL,                  // exit the entire game with a popup window
+  ERR_VID_FATAL,              // exit the entire game with a popup window and doesn't delete profile.pid
+  ERR_DROP,                   // print to console and disconnect from game
+  ERR_SERVERDISCONNECT,       // don't kill server
+  ERR_DISCONNECT,             // client disconnected from the server
+  ERR_NEED_CD,                // pop up the need-cd dialog
+  ERR_AUTOUPDATE
 } errorParm_t;
 
 /*
@@ -193,18 +193,18 @@ typedef enum {
 */
 
 #define CVAR_ARCHIVE        1   // set to cause it to be saved to vars.rc
-								// used for system variables, not for player
-								// specific configurations
+                // used for system variables, not for player
+                // specific configurations
 #define CVAR_USERINFO       2   // sent to server on connect or change
 #define CVAR_SERVERINFO     4   // sent in response to front end requests
 #define CVAR_SYSTEMINFO     8   // these cvars will be duplicated on all clients
 #define CVAR_INIT           16  // don't allow change from console at all,
-								// but can be set from the command line
+                // but can be set from the command line
 #define CVAR_LATCH          32  // will only change when C code next does
-								// a Cvar_Get(), so it can't be changed
-								// without proper initialization.  modified
-								// will be set, even though the value hasn't
-								// changed yet
+                // a Cvar_Get(), so it can't be changed
+                // without proper initialization.  modified
+                // will be set, even though the value hasn't
+                // changed yet
 #define CVAR_ROM            64  // display only, cannot be set by user at all
 #define CVAR_USER_CREATED   128 // created by a set command
 #define CVAR_TEMP           256 // can be set even when cheats are disabled, but is not archived
@@ -217,17 +217,17 @@ typedef enum {
 
 // nothing outside the Cvar_*() functions should modify these fields!
 typedef struct cvar_s {
-	char        *name;
-	char        *string;
-	char        *resetString;       // cvar_restart will reset to this value
-	char        *latchedString;     // for CVAR_LATCH vars
-	int flags;
-	qboolean modified;              // set each time the cvar is changed
-	int modificationCount;          // incremented each time the cvar is changed
-	float value;                    // atof( string )
-	int integer;                    // atoi( string )
-	struct cvar_s *next;
-	struct cvar_s *hashNext;
+  char        *name;
+  char        *string;
+  char        *resetString;       // cvar_restart will reset to this value
+  char        *latchedString;     // for CVAR_LATCH vars
+  int flags;
+  qboolean modified;              // set each time the cvar is changed
+  int modificationCount;          // incremented each time the cvar is changed
+  float value;                    // atof( string )
+  int integer;                    // atoi( string )
+  struct cvar_s *next;
+  struct cvar_s *hashNext;
 } cvar_t;
 
 #define MAX_CVAR_VALUE_STRING   256
@@ -237,11 +237,11 @@ typedef int cvarHandle_t;
 // the modules that run in the virtual machine can't access the cvar_t directly,
 // so they must ask for structured updates
 typedef struct {
-	cvarHandle_t handle;
-	int modificationCount;
-	float value;
-	int integer;
-	char string[MAX_CVAR_VALUE_STRING];
+  cvarHandle_t handle;
+  int modificationCount;
+  float value;
+  int integer;
+  char string[MAX_CVAR_VALUE_STRING];
 } vmCvar_t;
 
 
@@ -280,28 +280,28 @@ typedef struct {
 #define MAX_BINARY_MESSAGE  32768   // max length of binary message
 
 typedef struct cplane_s {
-	vec3_t	normal;
-	float	dist;
-	byte	type;
-	byte	signbits;
-	byte	pad[2];
+  vec3_t	normal;
+  float	dist;
+  byte	type;
+  byte	signbits;
+  byte	pad[2];
 } cplane_t;
 
 typedef struct {
-	float		fraction;
-	vec3_t		endpos;
+  float		fraction;
+  vec3_t		endpos;
 
-	vec3_t normal; //normal?
-	
-	//not sure can be dist? but most likely not due to too far away distance on low range and non-float
-	byte	type;
-	byte	signbits;
-	byte	pad[2];
-	
-	int contents;
-	char *textureName;
-	int entityNum;
-	int surfaceFlags; //assuming it's surfaceFlags, but where is allsolid, startsolid? ( 2.3509887e-38 or 0x01000000 )
+  vec3_t normal; //normal?
+  
+  //not sure can be dist? but most likely not due to too far away distance on low range and non-float
+  byte	type;
+  byte	signbits;
+  byte	pad[2];
+  
+  int contents;
+  char *textureName;
+  int entityNum;
+  int surfaceFlags; //assuming it's surfaceFlags, but where is allsolid, startsolid? ( 2.3509887e-38 or 0x01000000 )
 } trace_t;
 
 /*
@@ -337,12 +337,12 @@ typedef struct {
 
 #pragma pack(1)
 typedef struct {
-	int overflowed; //0
-	byte* data; //4
-	int maxsize; //8 (most likely maxsize value 16384)
-	int cursize; //12 //value 129
-	int readcount; //16 //value 16
-	int bit; //20 //value 0
+  int overflowed; //0
+  byte* data; //4
+  int maxsize; //8 (most likely maxsize value 16384)
+  int cursize; //12 //value 129
+  int readcount; //16 //value 16
+  int bit; //20 //value 0
 } msg_t; //size is 0x18 (24)
 #pragma pack(push, 1)
 
@@ -359,10 +359,10 @@ extern MSG_BeginReading_t MSG_BeginReading;
 extern MSG_ReadString_t MSG_ReadString;
 
 typedef enum {
-	FS_READ,
-	FS_WRITE,
-	FS_APPEND,
-	FS_APPEND_SYNC
+  FS_READ,
+  FS_WRITE,
+  FS_APPEND,
+  FS_APPEND_SYNC
 } fsMode_t;
 
 typedef enum {
@@ -375,38 +375,38 @@ typedef enum {
     ET_PORTAL, //6
     ET_INVISIBLE, //7
     ET_SCRIPTMOVER, //8
-	ET_UNKNOWN, //9
-	ET_FX, //10
-	ET_TURRET, //11
-	ET_EVENTS //12
+  ET_UNKNOWN, //9
+  ET_FX, //10
+  ET_TURRET, //11
+  ET_EVENTS //12
 } entityType_t;
 
 typedef enum {
-	TR_STATIONARY,
-	TR_INTERPOLATE,             // non-parametric, but interpolate between snapshots
-	TR_LINEAR,
-	TR_LINEAR_STOP,
-	TR_LINEAR_STOP_BACK,        //----(SA)	added.  so reverse movement can be different than forward
-	TR_SINE,                    // value = base + sin( time / duration ) * delta
-	TR_GRAVITY,
-	// Ridah
-	TR_GRAVITY_LOW,
-	TR_GRAVITY_FLOAT,           // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
-	TR_GRAVITY_PAUSED,          //----(SA)	has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
-	TR_ACCELERATE,
-	TR_DECCELERATE,
-	// Gordon
-	TR_SPLINE,
-	TR_LINEAR_PATH
+  TR_STATIONARY,
+  TR_INTERPOLATE,             // non-parametric, but interpolate between snapshots
+  TR_LINEAR,
+  TR_LINEAR_STOP,
+  TR_LINEAR_STOP_BACK,        //----(SA)	added.  so reverse movement can be different than forward
+  TR_SINE,                    // value = base + sin( time / duration ) * delta
+  TR_GRAVITY,
+  // Ridah
+  TR_GRAVITY_LOW,
+  TR_GRAVITY_FLOAT,           // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
+  TR_GRAVITY_PAUSED,          //----(SA)	has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
+  TR_ACCELERATE,
+  TR_DECCELERATE,
+  // Gordon
+  TR_SPLINE,
+  TR_LINEAR_PATH
 } trType_t;
 
 typedef struct {
-	trType_t trType;
-	int trTime;
-	int trDuration;             // if non 0, trTime + trDuration = stop time
+  trType_t trType;
+  int trTime;
+  int trDuration;             // if non 0, trTime + trDuration = stop time
 //----(SA)	removed
-	vec3_t trBase;
-	vec3_t trDelta;             // velocity, etc
+  vec3_t trBase;
+  vec3_t trDelta;             // velocity, etc
 //----(SA)	removed
 } trajectory_t;
 
@@ -439,40 +439,40 @@ extern level_locals_t *level;
 #define WBUTTON_RELOAD 8
 
 typedef enum {
-	WEAPON_READY, //0
-	WEAPON_RAISING, //1
-	WEAPON_DROPPING, //2
-	WEAPON_FIRING, //3
-	WEAPON_RECHAMBERING, //4
-	WEAPON_RELOADING, //5
-	WEAPON_RELOADING_INTERUPT, //6
-	WEAPON_RELOAD_START, //7
-	WEAPON_RELOAD_START_INTERUPT, //8
-	WEAPON_RELOAD_END, //9
-	WEAPON_MELEE_WINDUP, //10
-	WEAPON_MELEE_RELAX, //11
-	WEAPON_UNKNOWN //12
+  WEAPON_READY, //0
+  WEAPON_RAISING, //1
+  WEAPON_DROPPING, //2
+  WEAPON_FIRING, //3
+  WEAPON_RECHAMBERING, //4
+  WEAPON_RELOADING, //5
+  WEAPON_RELOADING_INTERUPT, //6
+  WEAPON_RELOAD_START, //7
+  WEAPON_RELOAD_START_INTERUPT, //8
+  WEAPON_RELOAD_END, //9
+  WEAPON_MELEE_WINDUP, //10
+  WEAPON_MELEE_RELAX, //11
+  WEAPON_UNKNOWN //12
 } weaponstates;
 
 typedef enum {
-	WEAP_IDLE, //0
-	WEAP_UNK, //1
-	WEAP_ATTACK, //2
-	WEAP_ATTACK_LASTSHOT, //3
-	WEAP_RECHAMBER, //4
-	WEAP_ADS_ATTACK, //5
-	WEAP_ADS_ATTACK_LASTSHOT, //6
-	WEAP_ADS_RECHAMBER, //7
-	WEAP_MELEE_ATTACK, //8
-	WEAP_DROP, //9
-	WEAP_RAISE, //10
-	WEAP_RELOAD, //11
-	WEAP_RELOAD_EMPTY, //12
-	WEAP_RELOAD_START, //13
-	WEAP_RELOAD_END, //14
-	WEAP_ALTSWITCHFROM, //15
-	WEAP_ALTSWITCHTO, //16
-	WEAP_UNKNOWN //17
+  WEAP_IDLE, //0
+  WEAP_UNK, //1
+  WEAP_ATTACK, //2
+  WEAP_ATTACK_LASTSHOT, //3
+  WEAP_RECHAMBER, //4
+  WEAP_ADS_ATTACK, //5
+  WEAP_ADS_ATTACK_LASTSHOT, //6
+  WEAP_ADS_RECHAMBER, //7
+  WEAP_MELEE_ATTACK, //8
+  WEAP_DROP, //9
+  WEAP_RAISE, //10
+  WEAP_RELOAD, //11
+  WEAP_RELOAD_EMPTY, //12
+  WEAP_RELOAD_START, //13
+  WEAP_RELOAD_END, //14
+  WEAP_ALTSWITCHFROM, //15
+  WEAP_ALTSWITCHTO, //16
+  WEAP_UNKNOWN //17
 } weaponanimations;
 
 #define MAX_ENTITIES 1024
@@ -485,24 +485,24 @@ typedef enum {
 #endif
 
 typedef enum {
-	SS_PLAYING,
-	SS_DEAD,
-	SS_SPECTATOR,
-	SS_INTERMISSION
+  SS_PLAYING,
+  SS_DEAD,
+  SS_SPECTATOR,
+  SS_INTERMISSION
 } sessionstate_types;
 
 #if CODPATCH == 1
 typedef enum {
-	EOFF_S_SVFLAGS = 244,
-	EOFF_S_GROUNDENTITYNUM = 124,
-	EOFF_ETYPE = 4,
+  EOFF_S_SVFLAGS = 244,
+  EOFF_S_GROUNDENTITYNUM = 124,
+  EOFF_ETYPE = 4,
     EOFF_EFLAGS = 8,
-	EOFF_PHYSICSOBJECT = 353,
+  EOFF_PHYSICSOBJECT = 353,
     EOFF_PLAYERSTATE = 344,
     EOFF_CONTENTS = 280,
-	EOFF_TAKEDAMAGE = 369,
+  EOFF_TAKEDAMAGE = 369,
     EOFF_NEXTTHINK = 508,
-	EOFF_FLAGS = 380,
+  EOFF_FLAGS = 380,
     EOFF_THINK = 512,
     EOFF_USE = 528,
     EOFF_PAIN = 532,
@@ -511,119 +511,119 @@ typedef enum {
     EOFF_CLASSNAME = 374, //it's a string index of scr_
     EOFF_ORIGIN = 308,
     EOFF_ANGLES = 320,
-	EOFF_CONTROLLER = 544
+  EOFF_CONTROLLER = 544
 } ENTITY_OFFSET;
 
 #else
 
 typedef enum {
-	EOFF_S_ETYPE = 4,
-	EOFF_EFLAGS = 8,
-	EOFF_PLAYERSTATE = 348,
-	EOFF_TAKEDAMAGE = 373,
-	EOFF_NEXTTHINK = 516,
-	EOFF_THINK = 520,
-	EOFF_USE = 536,
-	EOFF_PAIN = 540,
-	EOFF_DIE = 544,
-	EOFF_HEALTH = 568,
-	EOFF_FLAGS = 388,
-	EOFF_R_CONTENTS = 284,
-	EOFF_R_SVFLAGS = 244,
-	EOFF_TEAMMASTER = 620,
-	EOFF_TEAMCHAIN = 616,
-	EOFF_TEAM = 480,
-	EOFF_INUSE = 356,
-	EOFF_CLASSNAME = 380, //it's a string index of scr_
-	EOFF_R_OWNERNUM = 336,
-	EOFF_EVENTTIME = 392,
-	EOFF_FREEAFTEREVENT = 396,
-	EOFF_WAIT = 624,
-	EOFF_RANDOM = 628,
-	EOFF_CLIENTNUM = 144,
-	EOFF_ORIGIN = 312,
-	EOFF_ANGLES = 324,
-	EOFF_PHYSICSOBJECT = 357,
-	EOFF_UNLINKAFTEREVENT = 400,
-	EOFF_GROUNDENTITYNUM = 124,
-	EOFF_LOOPSOUND = 132,
-	EOFF_SOUND_OPENING = 359,
-	EOFF_SOUND_CLOSING = 360,
-	EOFF_SOUND_OPEN_END = 361,
-	EOFF_SOUND_OPEN_LOOP = 363,
-	EOFF_SOUND_CLOSE_LOOP = 364,
-	EOFF_SOUND_LOCKED = 365,
-	EOFF_SOUND_OPENING_QUIET = 366,
-	EOFF_SOUND_OPEN_QUIET_END = 367,
-	EOFF_SOUND_CLOSING_QUIET = 368,
-	EOFF_SOUND_CLOSE_QUIET_END = 369,
-	EOFF_MOVERSTATE = 376,
-	EOFF_SPAWNFLAGS = 384,
-	EOFF_DAMAGE = 576,
-	EOFF_SPEED = 488,
-	EOFF_SPLASHDAMAGE = 580,
-	EOFF_R_CURRENTORIGIN = 312,
-	EOFF_PARENT = 416,
-	EOFF_SPLASHRADIUS = 584,
-	EOFF_SPLASHMETHODOFDEATH = 588,
-	EOFF_R_EVENTTIME = 340
+  EOFF_S_ETYPE = 4,
+  EOFF_EFLAGS = 8,
+  EOFF_PLAYERSTATE = 348,
+  EOFF_TAKEDAMAGE = 373,
+  EOFF_NEXTTHINK = 516,
+  EOFF_THINK = 520,
+  EOFF_USE = 536,
+  EOFF_PAIN = 540,
+  EOFF_DIE = 544,
+  EOFF_HEALTH = 568,
+  EOFF_FLAGS = 388,
+  EOFF_R_CONTENTS = 284,
+  EOFF_R_SVFLAGS = 244,
+  EOFF_TEAMMASTER = 620,
+  EOFF_TEAMCHAIN = 616,
+  EOFF_TEAM = 480,
+  EOFF_INUSE = 356,
+  EOFF_CLASSNAME = 380, //it's a string index of scr_
+  EOFF_R_OWNERNUM = 336,
+  EOFF_EVENTTIME = 392,
+  EOFF_FREEAFTEREVENT = 396,
+  EOFF_WAIT = 624,
+  EOFF_RANDOM = 628,
+  EOFF_CLIENTNUM = 144,
+  EOFF_ORIGIN = 312,
+  EOFF_ANGLES = 324,
+  EOFF_PHYSICSOBJECT = 357,
+  EOFF_UNLINKAFTEREVENT = 400,
+  EOFF_GROUNDENTITYNUM = 124,
+  EOFF_LOOPSOUND = 132,
+  EOFF_SOUND_OPENING = 359,
+  EOFF_SOUND_CLOSING = 360,
+  EOFF_SOUND_OPEN_END = 361,
+  EOFF_SOUND_OPEN_LOOP = 363,
+  EOFF_SOUND_CLOSE_LOOP = 364,
+  EOFF_SOUND_LOCKED = 365,
+  EOFF_SOUND_OPENING_QUIET = 366,
+  EOFF_SOUND_OPEN_QUIET_END = 367,
+  EOFF_SOUND_CLOSING_QUIET = 368,
+  EOFF_SOUND_CLOSE_QUIET_END = 369,
+  EOFF_MOVERSTATE = 376,
+  EOFF_SPAWNFLAGS = 384,
+  EOFF_DAMAGE = 576,
+  EOFF_SPEED = 488,
+  EOFF_SPLASHDAMAGE = 580,
+  EOFF_R_CURRENTORIGIN = 312,
+  EOFF_PARENT = 416,
+  EOFF_SPLASHRADIUS = 584,
+  EOFF_SPLASHMETHODOFDEATH = 588,
+  EOFF_R_EVENTTIME = 340
 } ENTITY_OFFSET;
 
 #endif
 
 typedef enum
 {
-	POFF_CLIENTNUM = 172,
-	POFF_EFLAGS = 128,
-	POFF_PM_TYPE = 4,
+  POFF_CLIENTNUM = 172,
+  POFF_EFLAGS = 128,
+  POFF_PM_TYPE = 4,
   POFF_VELOCITY = 0x20,
   POFF_ANGLES = 0xC0,
-	POFF_SESSIONSTATE = 8400
+  POFF_SESSIONSTATE = 8400
 } PLAYER_OFFSET;
 
 #pragma pack(1)
 
 typedef struct {
-	char data[64]; //holds some values like origin of player before on turret, is being used flag, degrees of freedom (arcs)
+  char data[64]; //holds some values like origin of player before on turret, is being used flag, degrees of freedom (arcs)
 } turret_entity_info; //size 0x40
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
 
 typedef struct entityState_s {
-	int number;
-	entityType_t eType; //4
-	int eFlags; //8
-	trajectory_t pos; //12
-	trajectory_t apos; //48
-	int unk; //84 //time??
-	int unk2; //88 //time2??
-	vec3_t origin2; //92
-	vec3_t angles2; //104 (guessed name)
-	int otherEntityNum; //116
-	int otherEntityNum2; //120
-	int groundEntityNum; //124
-	int constantLight; //128
-	int loopSound; //132
-	int surfaceFlags; //136
-	int modelindex; //140
-	int clientNum; //144
-	char ___cba[0x34];
-	/*
-	gentity_t *teammaster; //152
-	int eventParm; //160
-	int eventSequence; //164
-	int events[4]; //168
-	int eventParms[4]; //184
-	*/
-	
-	int weapon; //200
-	int legsAnim; //204
-	int torsoAnim; //208
-	float leanf; //212
-	int loopfxid; //216
-	int hintstring; //220
-	int animMovetype; //224
+  int number;
+  entityType_t eType; //4
+  int eFlags; //8
+  trajectory_t pos; //12
+  trajectory_t apos; //48
+  int unk; //84 //time??
+  int unk2; //88 //time2??
+  vec3_t origin2; //92
+  vec3_t angles2; //104 (guessed name)
+  int otherEntityNum; //116
+  int otherEntityNum2; //120
+  int groundEntityNum; //124
+  int constantLight; //128
+  int loopSound; //132
+  int surfaceFlags; //136
+  int modelindex; //140
+  int clientNum; //144
+  char ___cba[0x34];
+  /*
+  gentity_t *teammaster; //152
+  int eventParm; //160
+  int eventSequence; //164
+  int events[4]; //168
+  int eventParms[4]; //184
+  */
+  
+  int weapon; //200
+  int legsAnim; //204
+  int torsoAnim; //208
+  float leanf; //212
+  int loopfxid; //216
+  int hintstring; //220
+  int animMovetype; //224
 } entityState_t;
 
 #pragma pack(push, 1)
@@ -640,9 +640,9 @@ typedef struct playerState_s
 
   //char gap_2C[20]; //TODO: check why was [20] but added less bytes
   vec2_t oldVelocity;
-	int	weaponTime;
-	int weaponDelay;
-	int	gravity;
+  int	weaponTime;
+  int weaponDelay;
+  int	gravity;
 
 
   float leanf;
@@ -708,45 +708,45 @@ typedef struct usercmd_s
 //FROM COD2REV
 typedef enum
 {
-	SESS_STATE_PLAYING,
-	SESS_STATE_DEAD,
-	SESS_STATE_SPECTATOR,
-	SESS_STATE_INTERMISSION,
+  SESS_STATE_PLAYING,
+  SESS_STATE_DEAD,
+  SESS_STATE_SPECTATOR,
+  SESS_STATE_INTERMISSION,
 } sessionState_t;
 typedef struct
 {
-	int clientIndex;
-	int team;
-	int modelindex;
-	int attachModelIndex[6];
-	int attachTagIndex[6];
-	char name[32];
+  int clientIndex;
+  int team;
+  int modelindex;
+  int attachModelIndex[6];
+  int attachTagIndex[6];
+  char name[32];
 } clientState_t;
 typedef struct
 {
-	sessionState_t sessionState;
-	int forceSpectatorClient;
-	int statusIcon;
-	int archiveTime;
-	int score;
-	int deaths;
-	uint16_t pers;
-	int connected;
-	usercmd_t cmd;
-	usercmd_t oldcmd;
-	int localClient;
-	int predictItemPickup;
-	char name[32];
-	int maxHealth;
-	int enterTime;
-	int voteCount;
-	int teamVoteCount;
-	float moveSpeedScaleMultiplier;
-	int viewmodelIndex;
-	int noSpectate;
-	int teamInfo;
-	clientState_t state;
-	int psOffsetTime;
+  sessionState_t sessionState;
+  int forceSpectatorClient;
+  int statusIcon;
+  int archiveTime;
+  int score;
+  int deaths;
+  uint16_t pers;
+  int connected;
+  usercmd_t cmd;
+  usercmd_t oldcmd;
+  int localClient;
+  int predictItemPickup;
+  char name[32];
+  int maxHealth;
+  int enterTime;
+  int voteCount;
+  int teamVoteCount;
+  float moveSpeedScaleMultiplier;
+  int viewmodelIndex;
+  int noSpectate;
+  int teamInfo;
+  clientState_t state;
+  int psOffsetTime;
 } clientSession_t;
 //FROM COD2REV END
 
@@ -779,15 +779,15 @@ struct gclient_s
 
 
 typedef enum {
-	PERK_QUICK_RELOAD
+  PERK_QUICK_RELOAD
 } perk_names;
 
 #define MAX_PERKS 16
 
 typedef struct gitem_s
 {
-	char *classname;
-	//some remaining
+  char *classname;
+  //some remaining
 } gitem_t;
 
 struct gentity_s {
@@ -908,20 +908,20 @@ memcpy((void*)dest, (void*)((int)e + off), size); \
 */
 
 static inline void ENT_SET(gentity_t *e, int off, void *src, size_t size) {
-	//printf("ENT_SET(%x, %d, %x, %d) ent num = %d\n", e, off, src, size, e->s.number);
-	memcpy((void*)(((int)e) + off), src, size);
+  //printf("ENT_SET(%x, %d, %x, %d) ent num = %d\n", e, off, src, size, e->s.number);
+  memcpy((void*)(((int)e) + off), src, size);
 }
 static inline void ENT_GET(gentity_t *e, int off, void *dest, size_t size) {
-	//printf("ENT_GET(%x, %d, %x, %d) ent num = %d\n", e, off, dest, size, e->s.number);
-	memcpy(dest, (void*)(((int)e) + off), size);
+  //printf("ENT_GET(%x, %d, %x, %d) ent num = %d\n", e, off, dest, size, e->s.number);
+  memcpy(dest, (void*)(((int)e) + off), size);
 }
 
 extern char* modNames[];
 
 typedef struct {
-	int weaponNumber; //not sure
-	char *weaponName;
-	
+  int weaponNumber; //not sure
+  char *weaponName;
+  
 } weaponInfo;
 
 typedef enum
@@ -1084,21 +1084,21 @@ typedef enum
     /*
     from
     typedef enum {
-	TRAP_MEMSET = 100,
-	TRAP_MEMCPY,
-	TRAP_STRNCPY,
-	TRAP_SIN,
-	TRAP_COS,
-	TRAP_ATAN2,
-	TRAP_SQRT,
-	TRAP_MATRIXMULTIPLY,
-	TRAP_ANGLEVECTORS,
-	TRAP_PERPENDICULARVECTOR,
-	TRAP_FLOOR,
-	TRAP_CEIL,
+  TRAP_MEMSET = 100,
+  TRAP_MEMCPY,
+  TRAP_STRNCPY,
+  TRAP_SIN,
+  TRAP_COS,
+  TRAP_ATAN2,
+  TRAP_SQRT,
+  TRAP_MATRIXMULTIPLY,
+  TRAP_ANGLEVECTORS,
+  TRAP_PERPENDICULARVECTOR,
+  TRAP_FLOOR,
+  TRAP_CEIL,
 
-	TRAP_TESTPRINTINT,
-	TRAP_TESTPRINTFLOAT
+  TRAP_TESTPRINTINT,
+  TRAP_TESTPRINTFLOAT
     } sharedTraps_t;
     */
 } gameImport_t;
@@ -1126,18 +1126,18 @@ extern BG_EvaluateTrajectoryDelta_t BG_EvaluateTrajectoryDelta;
 
 typedef enum {
     GAME_INIT,
-	GAME_SHUTDOWN,
-	GAME_CLIENT_CONNECT,
-	GAME_CLIENT_BEGIN,
-	GAME_CLIENT_USERINFO_CHANGED,
-	GAME_CLIENT_DISCONNECT,
-	GAME_CLIENT_COMMAND,
-	GAME_CLIENT_THINK,
-	GAME_GET_FOLLOW_PLAYERSTATE,
-	GAME_UPDATE_CVARS,
-	GAME_RUN_FRAME,
-	GAME_CONSOLE_COMMAND
-	//dont rlly need rest atm
+  GAME_SHUTDOWN,
+  GAME_CLIENT_CONNECT,
+  GAME_CLIENT_BEGIN,
+  GAME_CLIENT_USERINFO_CHANGED,
+  GAME_CLIENT_DISCONNECT,
+  GAME_CLIENT_COMMAND,
+  GAME_CLIENT_THINK,
+  GAME_GET_FOLLOW_PLAYERSTATE,
+  GAME_UPDATE_CVARS,
+  GAME_RUN_FRAME,
+  GAME_CONSOLE_COMMAND
+  //dont rlly need rest atm
 } gameExport_t;
 
 /*
@@ -1164,12 +1164,12 @@ extern _Cmd_AddCommand_t _Cmd_AddCommand;
 extern Com_Error_t Com_Error;
 
 static void __attribute__((visibility ("hidden"))) *xalloc(size_t size) {
-	void *p = malloc(size);
-	if(!p) {
-		Com_Error(0, "EXE_ERR_OUT_OF_MEMORY");
-		return NULL;
-	}
-	return p;
+  void *p = malloc(size);
+  if(!p) {
+    Com_Error(0, "EXE_ERR_OUT_OF_MEMORY");
+    return NULL;
+  }
+  return p;
 }
 
 /*
@@ -1284,10 +1284,10 @@ void COD_Destructor();
 
 /*
 static int GAME(const char* n) {
-	//printf("GAME(%s);\n", n);
-	if(gamelib!=NULL)
-	return (int)dlsym(gamelib, n);
-	return 0;
+  //printf("GAME(%s);\n", n);
+  if(gamelib!=NULL)
+  return (int)dlsym(gamelib, n);
+  return 0;
 }*/
 #define GAME(n) ((gamelib!=NULL)?(int)dlsym(gamelib,n):0)
 
@@ -1325,47 +1325,47 @@ static char *utrim(char *str) //malloc unsafe trim
 #define PRINT_DEBUG (1<<12)
 
 typedef enum {
-	PC_BLACK,
-	PC_RED,
-	PC_GREEN,
-	PC_YELLOW,
-	PC_BLUE,
-	PC_MAGENTA,
-	PC_CYAN,
-	PC_WHITE
+  PC_BLACK,
+  PC_RED,
+  PC_GREEN,
+  PC_YELLOW,
+  PC_BLUE,
+  PC_MAGENTA,
+  PC_CYAN,
+  PC_WHITE
 } print_colors;
 
 static void cprintf(int color, const char *fmt, ...) {
-	va_list va;
-	char text[1024] = {0};
-	
-	extern cvar_t *developer;
-	if(color & PRINT_DEBUG && !developer->integer)
-		return;
-	
-	if(color & PRINT_RESET)
-		printf("\e[0m");
-	if(color & PRINT_BOLD)
-		printf("\e[1m");
-	if(color & PRINT_UNDERLINE)
-		printf("\e[4m");
-	if(color & PRINT_BLINK)
-		printf("\e[6m");
-	if(color & PRINT_DEF)
-		printf("\e[30m");
-	if(color & PRINT_ERR)
-		printf("\e[31m");
-	if(color & PRINT_GOOD)
-		printf("\e[32m");
-	if(color & PRINT_WARN)
-		printf("\e[33m");
-	if(color & PRINT_INFO)
-		printf("\e[34m");
-	va_start(va, fmt);
-	vsnprintf(text, sizeof(text), fmt, va);
-	printf("%s", text);
-	printf("\e[0m");
-	va_end(va);
+  va_list va;
+  char text[1024] = {0};
+  
+  extern cvar_t *developer;
+  if(color & PRINT_DEBUG && !developer->integer)
+    return;
+  
+  if(color & PRINT_RESET)
+    printf("\e[0m");
+  if(color & PRINT_BOLD)
+    printf("\e[1m");
+  if(color & PRINT_UNDERLINE)
+    printf("\e[4m");
+  if(color & PRINT_BLINK)
+    printf("\e[6m");
+  if(color & PRINT_DEF)
+    printf("\e[30m");
+  if(color & PRINT_ERR)
+    printf("\e[31m");
+  if(color & PRINT_GOOD)
+    printf("\e[32m");
+  if(color & PRINT_WARN)
+    printf("\e[33m");
+  if(color & PRINT_INFO)
+    printf("\e[34m");
+  va_start(va, fmt);
+  vsnprintf(text, sizeof(text), fmt, va);
+  printf("%s", text);
+  printf("\e[0m");
+  va_end(va);
 }
 
 #endif // SHARED_H

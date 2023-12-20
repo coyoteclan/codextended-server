@@ -42,17 +42,17 @@ static searchpath_t *fs_searchpaths = (searchpath_t*)0x80DD590;
 
 int FS_IsPakFile(char *name)
 {
-	if(strstr(name, "pak") != NULL)
-		return 1;
-	if(strstr(name, "localized") != NULL)
-		return 1;
-	return 0;
+    if(strstr(name, "pak") != NULL)
+        return 1;
+    if(strstr(name, "localized") != NULL)
+        return 1;
+    return 0;
 }
 bool FS_IsServerFile(char* basename)
 {
     if(strstr(basename, "_svr_") != NULL)
-		return 1;
-	return 0;
+        return 1;
+    return 0;
 }
 bool FS_IsInNoDownloadCvar(char* basename)
 {

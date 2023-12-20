@@ -11,25 +11,25 @@ DEFINES=""
 
 while getopts “mdu1” qo #5
 do
-	case $qo in
-	m)
-		uMYSQL=true
-		uANY=true
-		;;
-	d)
-		DEBUG=true
-		;;
-	u)
-		uFEATUREUNSAFE=true
-		uANY=true
-		;;
-	1)
-		PATCHVERSION=1
-		;;
+    case $qo in
+    m)
+        uMYSQL=true
+        uANY=true
+        ;;
+    d)
+        DEBUG=true
+        ;;
+    u)
+        uFEATUREUNSAFE=true
+        uANY=true
+        ;;
+    1)
+        PATCHVERSION=1
+        ;;
 #	5)
 #		PATCHVERSION=5
 #		;;
-	esac
+    esac
 done
 
 if [ $PATCHVERSION = 5 ]; then
@@ -49,11 +49,11 @@ echo "Using: "
 fi
 
 if [ $uMYSQL = true ]; then
-	echo -n "MYSQL, "
+    echo -n "MYSQL, "
 fi
 
 if [ $uFEATUREUNSAFE = true ]; then
-	echo -n "Unsafe features, "
+    echo -n "Unsafe features, "
 fi
 
 if [ $uANY = true ]; then
