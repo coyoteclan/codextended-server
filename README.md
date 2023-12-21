@@ -1,4 +1,4 @@
-# Server extension for Call of Duty (2003)
+## Server extension for Call of Duty 1 (2003)
 Supported multiplayer patch: **1.1**
 ### This adds improvements, such as:
 #### Security
