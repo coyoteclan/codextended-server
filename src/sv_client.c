@@ -945,13 +945,16 @@ void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *msg)
     int tmp = *(int*)( (int)ent->client + 8400);
     if(tmp && !x_deadchat->integer)
     {
-        for (i = 0; i < sv_maxclients->integer; i++)
+        for(i = 0; i < sv_maxclients->integer; i++)
         {
             gentity_t *entInLoop = &g_entities[i];
-            if(entInLoop->client->sess.sessionState != SESS_STATE_PLAYING)
+            if(entInLoop->client)
             {
-                //cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ALLOW COMMUNICATION \n");
-                G_Say(ent, entInLoop, mode, line);
+                if(entInLoop->client->sess.sessionState != SESS_STATE_PLAYING)
+                {
+                    //cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ALLOW COMMUNICATION \n");
+                    G_Say(ent, entInLoop, mode, line);
+                }
             }
         }
     }
