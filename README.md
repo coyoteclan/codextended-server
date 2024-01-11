@@ -1,15 +1,10 @@
 ## Server extension for Call of Duty 1 (2003)
-Supported multiplayer patch: **1.1**
-### This adds improvements, such as:
-#### Security
+Supported patch: **1.1**
+### It adds security, fixes, and features
 - Directory traversal protection
-- ...
-#### Bug fixes
-- Download stuck issue fix
-- ...
-#### New features
+- Download stuck issue fix/workaround
 - Custom GSC functions
-- ...
+- and more
 ___
 ### Installation and usage
 
