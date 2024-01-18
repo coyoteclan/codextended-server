@@ -9,7 +9,7 @@ uFEATUREUNSAFE=false
 DEBUG=false
 DEFINES=""
 
-while getopts “mdu1” qo #5
+while getopts “mdu1” qo
 do
     case $qo in
     m)
@@ -32,35 +32,36 @@ do
     esac
 done
 
-if [ $PATCHVERSION = 5 ]; then
-echo "Call of Duty Patch 1.5"
+echo
+echo "Building CoDExtended server extension for Call of Duty 1 (2003)"
+if [ $DEBUG = true ]; then
+echo -n "Development"
 else
-echo "Call of Duty Patch 1.1"
+echo -n "Release"
+fi
+echo -n " configuration for patch "
+if [ $PATCHVERSION = 5 ]; then
+echo "1.5"
+else
+echo "1.1"
 fi
 
-if [ $DEBUG = true ]; then
-echo "{ CODEXTENDED DEVELOPMENT BUILD }"
-else
-echo "{ CODEXTENDED RELEASE BUILD }"
-fi
 
 if [ $uANY = true ]; then
 echo "Using: "
 fi
-
 if [ $uMYSQL = true ]; then
-    echo -n "MYSQL, "
+echo -n "MYSQL, "
 fi
-
 if [ $uFEATUREUNSAFE = true ]; then
-    echo -n "Unsafe features, "
+echo -n "Unsafe features, "
 fi
 
 if [ $uANY = true ]; then
 echo ""
 fi
 
-#Compiling CoDExtended
+#Compiling
 compiler="$cc -Os -O1 -O3 -s -fvisibility=hidden -w -Wl,--exclude-libs,ALL"
 
 if [ $DEBUG = true ]; then
@@ -82,8 +83,8 @@ params="$DEFINES -std=c99 -I. -m32 -fPIC -Wno-write-strings"
 
 mkdir -p ../build
 mkdir -p obj
-echo -e "\nCOMPILING"
 
+echo
 echo "[ROOT]"
 $compiler $params -c init.c -o obj/init.o
 $compiler $params -c librarymodule.c -o obj/librarymodule.o
@@ -103,8 +104,6 @@ $compiler $params -c g_active.c -o obj/g_active.o
 $compiler $params -c q_math.c -o obj/q_math.o
 $compiler $params -c files.c -o obj/files.o
 echo "[SERVER]"
-nasm -f elf sv_snapshot.asm -o obj/sv_snapshot_asm.o
-$compiler $params -c sv_snapshot.c -o obj/sv_snapshot.o
 $compiler $params -c sv_commands.c -o obj/sv_commands.o
 $compiler $params -c sv_client.c -o obj/sv_client.o
 $compiler $params -c sv_world.c -o obj/sv_world.o
@@ -120,7 +119,7 @@ $compiler $params -c scr_method_player.c -o obj/scr_method_player.o
 $compiler $params -c scr_string.c -o obj/scr_string.o
 $compiler $params -c scr_fields.c -o obj/scr_fields.o
 $compiler $params -c scr_method_entity.c -o obj/scr_method_entity.o
-echo "[NEW]"
+echo "[LIBCOD]"
 $compiler $params -c cracking.c -o obj/cracking.o
 
 if [ $uMYSQL = true ]; then
@@ -143,4 +142,4 @@ $compiler -m32 -shared -L/lib32 -L./lib -o ../build/codextended.so $obj -Os -s -
 fi
 fi
 find ./obj -name '*.o' ! -name 'duktape.o' -delete
-echo -e "\n\nBuild completed.\nFind codextended.so in the build folder.\n"
+echo -e "\nBuild completed. Find codextended.so in the build folder.\n"

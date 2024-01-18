@@ -1,20 +1,3 @@
-/*
-	This file is part of CoDExtended.
-
-    CoDExtended is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    CoDExtended is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with CoDExtended.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
@@ -23,192 +6,193 @@
 #include "bg_public.h"
 #include <math.h>
 
-typedef struct {
-	int map_main;
-	int idk;
-	int gametype_main;
-	int startgametype;
-	int playerconnect;
-	int playerdisconnect;
-	int playerdamage;
-	int playerkilled;
+typedef struct
+{
+    int map_main;
+    int idk;
+    int gametype_main;
+    int startgametype;
+    int playerconnect;
+    int playerdisconnect;
+    int playerdamage;
+    int playerkilled;
 } game_script_data;
 
 extern game_script_data *g_scr_data;
 
 typedef struct {
-	short active;
-	short air_strike;
-	short allies;
-	short animdone;
-	short axis;
-	short bodyque;
-	short combat;
-	short connected;
-	short connecting;
-	short count;
-	short crouch;
-	short crowbar;
-	short current;
-	short damage;
-	short death;
-	short disconnected;
-	short dlight;
-	short done;
-	short empty;
-	short enemy;
-	short enemyhidden;
-	short enemyvisible;
-	short entity;
-	short failed;
-	short flamebarrel;
-	short fraction;
-	short func_door;
-	short func_door_rotating;
-	short func_rotating;
-	short func_tramcar;
-	short goal;
-	short grenade;
-	short info_notnull;
-	short invisible;
-	short key1;
-	short key2;
-	short killanimscript;
-	short left;
-	short misc_flak;
-	short misc_mg42;
-	short misc_tagemitter;
-	short mortar;
-	short movedone;
-	short noclass;
-	short noenemy;
-	short noncombat;
-	short normal;
-	short pistol;
-	short plane_waypoint;
-	short player;
-	short position;
-	short primary;
-	short primaryb;
-	short prone;
-	short right;
-	short rocket;
-	short rotatedone;
-	short script_brushmodel;
-	short script_model;
-	short script_origin;
-	short scriptcamera;
-	short spawned;
-	short spectator;
-	short stand;
-	short surfacetype;
-	short tag_engine1;
-	short tag_engine2;
-	short target_location;
-	short target_script_trigger;
-	short tempEntity;
-	short muzzleEntity;
-	short smokegrenade;
-	short touch;
-	short trigger;
-	short trigger_use;
-	short trigger_damage;
-	short trigger_lookat;
-	short truck_cam;
-	short xmodel_airborne;
-	short xmodel_wehrmacht;
-	short worldspawn;
-	short begin;
-	short dynamite;
-	short explosive_indicator;
-	short flamechunk;
-	short follow;
-	short free;
-	short freed;
-	short func_leaky;
-	short info_player_checkpoint;
-	short initialize;
-	short intermission;
-	short item_stamina_brandy;
-	short menuresponse;
-	short misc_gunner_gun;
-	short misc_gunner_ring;
-	short mp_info_player_deathmatch;
-	short mp_info_player_intermission;
-	short mp_team_alliedplayer_respawn;
-	short mp_team_alliedplayer_start;
-	short mp_team_axisplayer_respawn;
-	short mp_team_axisplayer_start;
-	short nail;
-	short _not;
-	short playing;
-	short prox_mine;
-	short reset;
-	short script_mover;
-	short script_multiplayer;
-	short spear;
-	short tag_hand;
-	short tag_rider;
-	short tag_ring;
-	short team_CTF_blueflag;
-	short team_CTF_redflag;
-	short team_WOLF_checkpoint;
-	short team_WOLF_objective;
-	short trigger_aidoor;
-	short trigger_flagonly;
-	short trigger_multiple;
-	short trigger_objective_info;
-	short waiting_for_players;
-	short WP;
-	short zombiespit;
-	short none;
-	short dead;
-	short auto_change;
-	short manual_change;
+    short active;
+    short air_strike;
+    short allies;
+    short animdone;
+    short axis;
+    short bodyque;
+    short combat;
+    short connected;
+    short connecting;
+    short count;
+    short crouch;
+    short crowbar;
+    short current;
+    short damage;
+    short death;
+    short disconnected;
+    short dlight;
+    short done;
+    short empty;
+    short enemy;
+    short enemyhidden;
+    short enemyvisible;
+    short entity;
+    short failed;
+    short flamebarrel;
+    short fraction;
+    short func_door;
+    short func_door_rotating;
+    short func_rotating;
+    short func_tramcar;
+    short goal;
+    short grenade;
+    short info_notnull;
+    short invisible;
+    short key1;
+    short key2;
+    short killanimscript;
+    short left;
+    short misc_flak;
+    short misc_mg42;
+    short misc_tagemitter;
+    short mortar;
+    short movedone;
+    short noclass;
+    short noenemy;
+    short noncombat;
+    short normal;
+    short pistol;
+    short plane_waypoint;
+    short player;
+    short position;
+    short primary;
+    short primaryb;
+    short prone;
+    short right;
+    short rocket;
+    short rotatedone;
+    short script_brushmodel;
+    short script_model;
+    short script_origin;
+    short scriptcamera;
+    short spawned;
+    short spectator;
+    short stand;
+    short surfacetype;
+    short tag_engine1;
+    short tag_engine2;
+    short target_location;
+    short target_script_trigger;
+    short tempEntity;
+    short muzzleEntity;
+    short smokegrenade;
+    short touch;
+    short trigger;
+    short trigger_use;
+    short trigger_damage;
+    short trigger_lookat;
+    short truck_cam;
+    short xmodel_airborne;
+    short xmodel_wehrmacht;
+    short worldspawn;
+    short begin;
+    short dynamite;
+    short explosive_indicator;
+    short flamechunk;
+    short follow;
+    short free;
+    short freed;
+    short func_leaky;
+    short info_player_checkpoint;
+    short initialize;
+    short intermission;
+    short item_stamina_brandy;
+    short menuresponse;
+    short misc_gunner_gun;
+    short misc_gunner_ring;
+    short mp_info_player_deathmatch;
+    short mp_info_player_intermission;
+    short mp_team_alliedplayer_respawn;
+    short mp_team_alliedplayer_start;
+    short mp_team_axisplayer_respawn;
+    short mp_team_axisplayer_start;
+    short nail;
+    short _not;
+    short playing;
+    short prox_mine;
+    short reset;
+    short script_mover;
+    short script_multiplayer;
+    short spear;
+    short tag_hand;
+    short tag_rider;
+    short tag_ring;
+    short team_CTF_blueflag;
+    short team_CTF_redflag;
+    short team_WOLF_checkpoint;
+    short team_WOLF_objective;
+    short trigger_aidoor;
+    short trigger_flagonly;
+    short trigger_multiple;
+    short trigger_objective_info;
+    short waiting_for_players;
+    short WP;
+    short zombiespit;
+    short none;
+    short dead;
+    short auto_change;
+    short manual_change;
 } scr_const_t;
 typedef struct
 {
-	short texturename;
-	short contents;
-	//assumingly from perk > MAX_PERKS
-	short perks[MAX_PERKS];
+    short texturename;
+    short contents;
+    //assumingly from perk > MAX_PERKS
+    short perks[MAX_PERKS];
 } xscr_const_t;
 extern xscr_const_t xscr_const;
 extern scr_const_t *scr_const;
 
 /*
-	A pointer type their variable type is always 7 [object]
+    A pointer type their variable type is always 7 [object]
 */
 
 typedef enum {
-	VT_UNDEFINED, //0
-	VT_STRING, //1
-	VT_LOCALIZED_STRING, //2
-	VT_VECTOR, //3
-	VT_FLOAT, //4
-	VT_INT, //5
-	VT_CODEPOS, //6
-	VT_OBJECT, //7
-	VT_KEY_VALUE, //8
-	VT_FUNCTION, //9
-	VT_STACK, //10
-	VT_ANIMATION, //11
-	VT_THREAD, //12
-	VT_ENTITY, //13
-	VT_STRUCT, //14
-	VT_ARRAY, //16
-	VT_DEAD_THREAD, //15
-	VT_DEAD_ENTITY, //17
-	VT_DEAD_OBJECT //18
+    VT_UNDEFINED, //0
+    VT_STRING, //1
+    VT_LOCALIZED_STRING, //2
+    VT_VECTOR, //3
+    VT_FLOAT, //4
+    VT_INT, //5
+    VT_CODEPOS, //6
+    VT_OBJECT, //7
+    VT_KEY_VALUE, //8
+    VT_FUNCTION, //9
+    VT_STACK, //10
+    VT_ANIMATION, //11
+    VT_THREAD, //12
+    VT_ENTITY, //13
+    VT_STRUCT, //14
+    VT_ARRAY, //16
+    VT_DEAD_THREAD, //15
+    VT_DEAD_ENTITY, //17
+    VT_DEAD_OBJECT //18
 } script_variable_type;
 
 typedef void (__cdecl *SCRIPTFUNCTIONCALL)(int);
 
 typedef struct
 {
-	const char* name;
-	SCRIPTFUNCTIONCALL call;
-	int developer;
+    const char* name;
+    SCRIPTFUNCTIONCALL call;
+    int developer;
 } SCRIPTFUNCTION;
 
 typedef SCRIPTFUNCTIONCALL (*Scr_GetFunction_t)(const char**, int*);
@@ -216,35 +200,35 @@ typedef SCRIPTFUNCTIONCALL (*Scr_GetMethod_t)(const char**, int*);
 
 typedef struct
 {
-	char *var;
-	int structure_offset; //Some offset in the state for getting generic fields.
-	int structure_offset_type; //script type e.g "string", "int"
-	void (*set)(int);
-	void (*get)(int);
-	/*
-		Under here some additional stuff the CoD structure looks only like the one above.
-	*/
+    char *var;
+    int structure_offset; //Some offset in the state for getting generic fields.
+    int structure_offset_type; //script type e.g "string", "int"
+    void (*set)(int);
+    void (*get)(int);
+    /*
+        Under here some additional stuff the CoD structure looks only like the one above.
+    */
 } scr_memberfield;
 
 typedef struct
 {
-	char *name;
-	int offset;
-	int type;
-	void (*set)(gentity_t*);
+    char *name;
+    int offset;
+    int type;
+    void (*set)(gentity_t*);
 } scr_entityfield_t;
 
 /*
-	Works just like builtin functions only difference is the assignment or getting part.
-	e.g instead of 
-	<obj> setorigin( org );
-	<obj>.origin = org;
-	IF both cases were linked to the same function they'd do the same thing.
-	this applies for
-	org = <obj> getorigin();
-	org = <obj>.origin;
-	
-	- Richard
+    Works just like builtin functions only difference is the assignment or getting part.
+    e.g instead of 
+    <obj> setorigin( org );
+    <obj>.origin = org;
+    IF both cases were linked to the same function they'd do the same thing.
+    this applies for
+    org = <obj> getorigin();
+    org = <obj>.origin;
+    
+    - Richard
 */
 extern Scr_GetFunction_t Scr_GetFunction;
 extern Scr_GetMethod_t Scr_GetMethod;

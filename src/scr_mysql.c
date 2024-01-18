@@ -1,32 +1,15 @@
-/*
-	This file is part of CoDExtended.
-
-    CoDExtended is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    CoDExtended is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with CoDExtended.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "script.h"
 #ifdef uMYSQL
 void GScr_mysql_get_connection(int a1)
 {
-	if(db != NULL)
+    if(db != NULL)
     {
-		Scr_AddInt((int)db);
-	}
+        Scr_AddInt((int)db);
+    }
     else
     {
-		Scr_AddUndefined();
-	}
+        Scr_AddUndefined();
+    }
 }
 void GScr_mysql_init(int entityIndex)
 {
@@ -49,8 +32,8 @@ void GScr_mysql_real_connect(int entityIndex)
     if(m != NULL)
     {
         MYSQL *c = mysql_real_connect(m, hostname, username, password, database, port, NULL, 0);
-		my_bool reconnect = 1;
-		mysql_options(c, MYSQL_OPT_RECONNECT, &reconnect);
+        my_bool reconnect = 1;
+        mysql_options(c, MYSQL_OPT_RECONNECT, &reconnect);
         Scr_AddInt((int)c);
     }
     else
@@ -109,23 +92,23 @@ void GScr_mysql_fetch_field(int entityIndex)
 }
 void GScr_mysql_fetch_row(int a1)
 {
-	MYSQL_RES* result = (MYSQL_RES*)Scr_GetInt(0);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	if (!row) {
-		Scr_AddUndefined();
-		return;
-	}
+    MYSQL_RES* result = (MYSQL_RES*)Scr_GetInt(0);
+    MYSQL_ROW row = mysql_fetch_row(result);
+    if (!row) {
+        Scr_AddUndefined();
+        return;
+    }
 
-	Scr_MakeArray();
-	
-	int num = mysql_num_fields(result);
-	for (int i = 0; i < num; i++) {
-		if (row[i] == NULL)
-			Scr_AddUndefined();
-		else
-			Scr_AddString(row[i]);
-		Scr_AddArray();
-	}
+    Scr_MakeArray();
+    
+    int num = mysql_num_fields(result);
+    for (int i = 0; i < num; i++) {
+        if (row[i] == NULL)
+            Scr_AddUndefined();
+        else
+            Scr_AddString(row[i]);
+        Scr_AddArray();
+    }
 }
 void GScr_mysql_free_result(int entityIndex)
 {

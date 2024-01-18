@@ -1,25 +1,9 @@
 /*
-    This file is part of CoDExtended.
-
-    CoDExtended is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    CoDExtended is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with CoDExtended.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/*
     Call of Duty Extended
-        by riicchhaarrd
-    http://github.com/riicchhaarrd/CoDExtended
+        founded by Richard
+    https://github.com/riicchhaarrd
 */
+
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -194,21 +178,11 @@ void CoDExtended()
     const char *__cdecl FS_ReferencedPakNames();
     __jmp(0x80717A4, (int)FS_ReferencedPakChecksums);
     __jmp(0x80716CC, (int)FS_ReferencedPakNames);
-
-    extern void (*SV_AddEntitiesVisibleFromPoint_Intercept)(); /* actually is cached (SV_AddCachedEntities.....)*/
-
-    //maxclients
-    //*(byte*)0x8089F93 = 0xeb;
-    //*(byte*)0x8089E49 = 0xeb;
     
     //hooking the "quit" commands and when server shutdowns basically for reasons that lib_unload was being a prick
     __call(0x0806B8CE, (int)COD_Destructor);
     //0806CB0C to D since push offset <shutdown offset>
     *(int*)0x0806CB0D = (int)COD_Destructor;
-    
-    //patch unpure crap
-    //*(byte*)0x80874A6 = 0xeb;
-    //*(byte*)0x80871FD = 0xeb;
     
     #else
     __call(0x80713BF, (int)SV_Init);
