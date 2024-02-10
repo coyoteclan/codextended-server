@@ -2,15 +2,10 @@
 #include "server.h"
 
 //hardcode patching it to 0x20 = 32 = CONTENTS_WATER
-//which takes damage (from game without having to alter the way it works and you have no annoying blockers
+//which takes damage (from game without having to alter the way it works and you have no annoying blockers)
 //might have to set 256 etc too
 void G_SetPlayerContents(int a1)
 {
-    /*int result = *(int*)(a1 + 344);
-    if ( *(int*)(result + 8664) || *(int*)(result + 8668) || *(int*)(result + 8400) == 1 )
-        *(int*)(a1 + 280) = 0;
-    else
-    */
     if(!strcmp(x_contents->string, "manual"))
         return;
     if(x_contents->integer == -1)
@@ -23,13 +18,8 @@ int StuckInPlayer(int a1)
    return false;
 }
 
-gentity_t* mySpawnPlayerClone();
-
-extern int bodyqueindex;
-
 void myClientBegin(int);
 void hG_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText);
-void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message );
 
 extern cvar_t *x_spectator_noclip ;
 
@@ -46,7 +36,7 @@ void set_game_ptr( void *ret )
     unprotect_lib(libn);
 
     gamelib = ret;
-    base = (int)dlsym(ret, "vmMain"); //0x4D84C
+    base = (int)dlsym(ret, "vmMain");
     g_entities = (gentity_t*)dlsym(ret, "g_entities");
     level = (level_locals_t*)GAME("level");
     pml = (char (*)[140])dlsym(ret, "pml");

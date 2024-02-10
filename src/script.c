@@ -116,7 +116,7 @@ SCRIPTFUNCTION scriptMethods[] =
     {"setabsmins", ScriptEnt_SetAbsMin, 0},
     {"setabsmaxs", ScriptEnt_SetAbsMax, 0},
     {"setlight", ScriptEnt_SetLight, 0},
-    {"setanim", ScriptEnt_SetAnim, 0},
+    //{"setanim", ScriptEnt_SetAnim, 0},
     {"showtoplayer", Ent_ShowToPlayer, 0},
     
     /*

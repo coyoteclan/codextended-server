@@ -190,16 +190,51 @@ int play_endframe(gentity_t *ent)
     return ret;
 }
 
+#if 0
+int custom_animation[MAX_CLIENTS] = {0};
+cHook *hook_set_anim;
+int set_anim(playerState_t *ps, int animNum, int bodyPart, int forceDuration, qboolean setTimer, qboolean isContinue, qboolean force)
+{
+    cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "set_anim \n");
+
+    cHook_unhook(hook_set_anim);
+
+	int (*sig)(playerState_t *ps, int animNum, int bodyPart, int forceDuration, qboolean setTimer, qboolean isContinue, qboolean force);
+	*(int *)&sig = hook_set_anim->from;
+	int ret;
+
+	if (!custom_animation[ps->clientNum])
+    {
+        ret = sig(ps, animNum, bodyPart, forceDuration, setTimer, isContinue, force);
+    }
+	else
+    {
+        cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "set_anim: custom_animation[ps->clientNum] \n");
+
+        ret = sig(ps, custom_animation[ps->clientNum], bodyPart, forceDuration, qtrue, isContinue, qtrue);
+    }
+
+	cHook_hook(hook_set_anim);
+
+    cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "set_anim: return ret \n");
+
+	return ret;
+}
+#endif
+
 void BG_Link()
 {
+    #if 0
     __call(GAME("PM_Weapon") + 0x121, (int)_PM_CheckForChangeWeapon);
     PM_CheckForChangeWeapon = (void(*)())GAME("PM_AdjustAimSpreadScale") + 0x330;
     PM_BeginWeaponChange = (void(*)())GAME("PM_InteruptWeaponWithProneMove") + 0x614;
     __call(GAME("PM_Weapon") + 0x1BA, (int)_PM_FinishWeaponChange);
     PM_FinishWeaponChange = (void(*)())GAME("PM_InteruptWeaponWithProneMove") + 0x8FC;
+    #endif
 
     __call(GAME("PM_StepSlideMove") + 0x40A, (int)PM_Bounce);
 
+    #if 0
     /*
         aim in air if client allows it
         maybe add a groundEntityNum = 1023; force???
@@ -216,8 +251,14 @@ void BG_Link()
     //__jmp( GAME("PM_ClearAimDownSightFlag"), _PM_ClearAimDownSightFlag);
     __call( thk + 0xFD, _PM_ClearAimDownSightFlag);
     __call( GAME("vmMain") - 0x1F119, _PM_ClearAimDownSightFlag);
+    #endif
 
     hook_play_endframe = (cHook *)malloc(sizeof(cHook));
     cHook_init(hook_play_endframe, GAME("ClientEndFrame"), (int)play_endframe);
     cHook_hook(hook_play_endframe);
+
+    /*
+    hook_set_anim = (cHook *)malloc(sizeof(cHook)); 
+    cHook_init(hook_set_anim, GAME("BG_PlayAnim"), (int)set_anim);
+    cHook_hook(hook_set_anim);*/
 }

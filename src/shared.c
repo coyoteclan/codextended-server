@@ -38,7 +38,10 @@ char* modNames[] = {
 
 #if CODPATCH == 1
 _Cmd_AddCommand_t _Cmd_AddCommand = (_Cmd_AddCommand_t)0x805AEF8;
+
 DECLARE_F(Com_Printf, 0x806B760);
+//Com_Printf_t Com_Printf = (Com_Printf_t)0x806B760;
+
 Com_DPrintf_t _STRIP Com_DPrintf = (Com_DPrintf_t)0x806B79C;
 Com_Error_t _STRIP Com_Error = (Com_Error_t)0x806B93C;
 Cmd_Argv_t Cmd_Argv = (Cmd_Argv_t)0x805B258;

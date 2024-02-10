@@ -49,20 +49,43 @@ void ScriptEnt_SetLight(int ent)
     e->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 }
 
-
+#if 0
 void ScriptEnt_SetAnim(int entityNum)
 {
-    #if 0
-    gentity_t *entity = &g_entities[entityNum];
     char* animation = Scr_GetString(0);
-    int animationIndex = oBG_AnimationIndexForString(animation);
-    cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "##### ScriptEnt_SetAnim: animationIndex = %i \n", animationIndex);
-    gclient_t *gclient = entity->client;
-    *(int*)((int)gclient + 980) = animationIndex;
-    #endif
+    //TODO: check animation is valid string
+
+    gentity_t *entity = &g_entities[entityNum];
+
+    if (entity->s.eType == ET_CORPSE)
+	{
+        cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ScriptEnt_SetAnim: ET_CORPSE \n");
+
+		int index = oBG_AnimationIndexForString(animation);
+        entity->s.legsAnim = index;
+		Scr_AddBool(true);
+		return;
+	}
+    if(!entity->client)
+    {
+        Scr_Error("ScriptEnt_SetAnim: entity is not a player");
+        return;
+    }
+
+    extern int custom_animation[MAX_CLIENTS];
+	int animationIndex = 0;
+
+    if (strcmp(animation, "none") != 0)
+		animationIndex = oBG_AnimationIndexForString(animation);
+
+    cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ScriptEnt_SetAnim: animationIndex = %i \n", animationIndex);
+
+    custom_animation[entityNum] = animationIndex;
+    Scr_AddBool(true);
+
+    cprintf(PRINT_UNDERLINE | PRINT_DEBUG, "ScriptEnt_SetAnim: end \n");
 }
-
-
+#endif
 
 void ScriptEnt_SetBounds(int entityNum)
 {

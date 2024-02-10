@@ -5,6 +5,8 @@ x##_t x = (x##_t)(addr)
 typedef return_type (*x##_t)(__VA_ARGS__); \
 extern x##_t x
 
+#if 1 //TODO: not need these defines
+
 #define VectorLength xtn_VectorLength
 #define ProjectPointOnPlane xtn_ProjectPointOnPlane
 #define MatrixMultiply xtn_MatrixMultiply
@@ -489,3 +491,5 @@ extern x##_t x
 #define _Q_rand xtn__Q_rand
 #define Cvar_Set xtn_Cvar_Set
 #define PlayerCmd_FreezeControls xtn_PlayerCmd_FreezeControls
+
+#endif

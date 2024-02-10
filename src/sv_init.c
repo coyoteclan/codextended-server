@@ -9,10 +9,11 @@ netadr_t masterAddress;
 
 cvar_t *developer;
 
+#define MAX_CONTENT_LENGTH 50
 void SV_Init( void )
 {
     void (*init)( void );
-
+    
     #if CODPATCH == 1
     *(int*)&init = 0x808A94C;
     #else if CODPATCH == 5

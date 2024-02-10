@@ -20,7 +20,7 @@
 
 #define SVF_NOCLIENT       		0x00000001
 #define SVF_BROADCAST      		0x00000020
-#define SVF_CAPSULE        		0x00000200  // use capsule for collision detection
+#define SVF_CAPSULE        		0x00000200 // use capsule for collision detection
 #define SVF_SINGLECLIENT   		0x00000800 // only send to a single client (entityShared_t->singleClient)
 #define SVF_NOTSINGLECLIENT		0x00002000 // send entity to everyone but one client
 

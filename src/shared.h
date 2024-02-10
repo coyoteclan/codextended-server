@@ -1162,6 +1162,10 @@ CMD
 */
 
 DEFINE_F(void, Com_Printf, const char*, ...);
+//typedef void (QDECL *Com_Printf_t)(const char*, ...);
+//#define Com_Printf _PREFX
+//extern Com_Printf_t Com_Printf;
+
 
 typedef void (QDECL *Com_DPrintf_t)(const char*, ...);
 #define Com_DPrintf _PREFX

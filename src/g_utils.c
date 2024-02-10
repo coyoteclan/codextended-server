@@ -7,7 +7,7 @@ G_SetOrigin_t G_SetOrigin;
 
 void _Scr_FreeEntity(gentity_t *ent)
 {
-    scr_entityfield_t *fields = (scr_entityfield_t*)( GAME("vmMain") + 0x28094 );
+    scr_entityfield_t *fields = (scr_entityfield_t*)(GAME("vmMain") + 0x28094);
     for(int i = 0; fields[i].name; i++) {
         if(fields[i].type == 3)
             Scr_SetString((int*)((unsigned)ent + fields[i].offset), 0);

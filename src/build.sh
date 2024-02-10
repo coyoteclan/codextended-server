@@ -81,7 +81,7 @@ fi
 
 params="$DEFINES -std=c99 -I. -m32 -fPIC -Wno-write-strings"
 
-mkdir -p ../build
+mkdir -p ../bin
 mkdir -p obj
 
 echo
@@ -119,7 +119,7 @@ $compiler $params -c scr_method_player.c -o obj/scr_method_player.o
 $compiler $params -c scr_string.c -o obj/scr_string.o
 $compiler $params -c scr_fields.c -o obj/scr_fields.o
 $compiler $params -c scr_method_entity.c -o obj/scr_method_entity.o
-echo "[LIBCOD]"
+echo "[LIBCOD CRACKING]"
 $compiler $params -c cracking.c -o obj/cracking.o
 
 if [ $uMYSQL = true ]; then
@@ -130,16 +130,16 @@ obj="$(ls obj/*.o)"
 
 if [ $uMYSQL = true ]; then
 if [ $DEBUG = true ]; then
-$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../build/codextended.so $obj -Os -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../bin/codextended.so $obj -Os -lz -ldl -lm -Wall
 else
-$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../build/codextended.so $obj -Os -s -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L/home/lib `mysql_config --libs --include` -o ../bin/codextended.so $obj -Os -s -lz -ldl -lm -Wall
 fi
 else
 if [ $DEBUG = true ]; then
-$compiler -m32 -shared -L/lib32 -L./lib -o ../build/codextended.so $obj -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L./lib -o ../bin/codextended.so $obj -lz -ldl -lm -Wall
 else
-$compiler -m32 -shared -L/lib32 -L./lib -o ../build/codextended.so $obj -Os -s -lz -ldl -lm -Wall
+$compiler -m32 -shared -L/lib32 -L./lib -o ../bin/codextended.so $obj -Os -s -lz -ldl -lm -Wall
 fi
 fi
 find ./obj -name '*.o' ! -name 'duktape.o' -delete
-echo -e "\nBuild completed. Find codextended.so in the build folder.\n"
+echo -e "\nBuild completed. Find codextended.so in the bin folder.\n"
